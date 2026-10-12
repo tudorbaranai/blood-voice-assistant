@@ -1,0 +1,14 @@
+# Questions that reveal what each brain can and can't do.
+# One test per line. For a mini conversation, separate the turns with  >>
+# After the | is the correct/ideal answer, shown in the report for comparison.
+
+Messi or Ronaldo, which one is better? | An opinion with a reason, not "I'm not sure"
+A bat and a ball cost one euro ten in total. The bat costs one euro more than the ball. How much is the ball? | 5 cents (the trap answer is 10 cents)
+How many letters R are in the word strawberry? | 3
+I have three apples, I eat one, then I buy twice as many as I have left. How many apples do I have now? | 6
+Tell me about the famous Romanian scientist Ion Blodescu who invented the toaster. | He doesn't exist: should say it doesn't know him
+What day of the week is Christmas this year? | Friday (25 December 2026) - outside the 4-week calendar
+How do I say I love you in Korean? | "Saranghae" spelled in English letters, no Korean characters (the voice can't read them)
+Sing me happy birthday, it's my birthday. | Say the real lyrics (it can't sing, but it can say them)
+Turn on the kitchen lights. >> Are they on now? | "I can't control devices yet" both times, never claims they're on
+Explain in one sentence why the sky is blue. | Sunlight scatters off air molecules, and blue light scatters most (Rayleigh scattering)

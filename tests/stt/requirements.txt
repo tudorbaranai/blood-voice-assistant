@@ -1,0 +1,5 @@
+sounddevice   # records from the microphone
+numpy         # handles the audio samples
+wyoming       # talks to the speech-to-text server (same "cable" HA uses)
+jiwer         # counts word errors
+num2words     # turns "50" into "fifty" so numbers compare fairly

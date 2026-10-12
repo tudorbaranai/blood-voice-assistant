@@ -1,0 +1,30 @@
+# --- Secrets: never commit ---
+.env
+*.token
+secrets*
+
+# --- Python environment (big, machine-specific, recreated from requirements.txt) ---
+.venv/
+__pycache__/
+*.pyc
+
+# --- Private: raw build logs (contain home network details) ---
+docs/history/
+
+# --- Private: recordings of my voice ---
+tests/stt/recordings/
+tests/stt/mic-*/
+
+# --- Generated audio (recreate with the scripts in tests/tts/) ---
+*.wav
+*.mp3
+
+# --- Models (downloaded or trained separately, see the tutorial) ---
+models/
+
+# --- Editor / OS clutter ---
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+.DS_Store

@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How Blood Works</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --card: #ffffff; --ink: #1d1d1f; --muted: #66666e; --line: #d9d7d0;
+    --win: #e8f0fb; --win-edge: #8fb0dd; --vm: #eef6ec; --vm-edge: #8fbf88;
+    --node: #ffffff; --node-edge: #b9b7b0;
+    --hot: #e8590c; --hot-soft: #fff0e6; --ok: #2f9e44; --warn: #d9480f; --cloud: #7048e8; --cloud-soft: #f1ecff;
+    --mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141416; --card: #1d1d21; --ink: #ececf0; --muted: #a0a0aa; --line: #34343a;
+      --win: #17243a; --win-edge: #3d5f91; --vm: #162a1a; --vm-edge: #3f7a45;
+      --node: #222228; --node-edge: #4a4a52;
+      --hot: #ff8a3d; --hot-soft: #3a2414; --ok: #51cf66; --warn: #ff8a3d; --cloud: #9775fa; --cloud-soft: #241d3a;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.55 "Segoe UI", system-ui, sans-serif; }
+  main { max-width: 1060px; margin: 0 auto; padding: 28px 16px 60px; }
+  h1 { font-size: 2rem; margin: 0 0 4px; }
+  h2 { font-size: 1.35rem; margin: 44px 0 10px; }
+  .lead { color: var(--muted); margin: 0 0 22px; max-width: 760px; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  button { font: inherit; cursor: pointer; border: 1px solid var(--line); background: var(--card); color: var(--ink);
+           border-radius: 999px; padding: 7px 16px; }
+  button:hover { border-color: var(--hot); }
+  button.on { background: var(--hot); border-color: var(--hot); color: #fff; }
+  button.cloudbtn.on { background: var(--cloud); border-color: var(--cloud); }
+  button:disabled { opacity: .4; cursor: default; }
+  .label { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); margin-right: 4px; }
+
+  /* diagram */
+  svg { width: 100%; height: auto; display: block; }
+  .zone-win { fill: var(--win); stroke: var(--win-edge); }
+  .zone-vm { fill: var(--vm); stroke: var(--vm-edge); }
+  .zone-asus { fill: none; stroke: var(--muted); stroke-dasharray: 6 5; }
+  .zone-title { font-size: 13px; font-weight: 600; fill: var(--muted); }
+  .node rect { fill: var(--node); stroke: var(--node-edge); stroke-width: 1.5; rx: 10; transition: all .25s; }
+  .node text { fill: var(--ink); font-size: 13.5px; }
+  .node .sub { fill: var(--muted); font-size: 11px; }
+  .node.active rect { stroke: var(--hot); stroke-width: 3; fill: var(--hot-soft); }
+  .node.cloudy rect { stroke: var(--cloud); stroke-dasharray: 5 4; fill: var(--cloud-soft); }
+  .edge { fill: none; stroke: var(--node-edge); stroke-width: 2; transition: all .25s; }
+  .edge.active { stroke: var(--hot); stroke-width: 3.5; stroke-dasharray: 8 6; animation: flow .7s linear infinite; }
+  @keyframes flow { to { stroke-dashoffset: -14; } }
+  .edgelabel { font-size: 11px; fill: var(--muted); }
+  #cloudLayer { opacity: 0; transition: opacity .3s; }
+  #cloudLayer.show { opacity: 1; }
+  .cloudedge { fill: none; stroke: var(--cloud); stroke-width: 2.5; stroke-dasharray: 6 5; }
+  .cloudbox { fill: var(--cloud-soft); stroke: var(--cloud); stroke-width: 2; }
+
+  /* step panel */
+  .stepbox { margin-top: 14px; display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: start; }
+  .stepnum { font-size: .85rem; color: var(--hot); font-weight: 700; }
+  .steptitle { font-size: 1.2rem; font-weight: 650; margin: 2px 0 6px; }
+  .facts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .chip { font-size: .82rem; border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; color: var(--muted); }
+  .chip b { color: var(--ink); font-weight: 600; }
+  .progress { height: 6px; background: var(--line); border-radius: 3px; margin-top: 14px; overflow: hidden; }
+  .progress div { height: 100%; background: var(--hot); width: 0; transition: width .3s; }
+  .privacy { margin-top: 12px; padding: 10px 14px; border-radius: 10px; font-weight: 600; }
+  .privacy.safe { background: color-mix(in srgb, var(--ok) 14%, transparent); color: var(--ok); }
+  .privacy.leak { background: var(--cloud-soft); color: var(--cloud); }
+
+  /* prompt anatomy */
+  .stack { display: grid; gap: 6px; max-width: 640px; }
+  .layer { border-radius: 10px; padding: 10px 14px; border: 1px solid var(--line); }
+  .layer small { color: var(--muted); display: block; }
+  .l1 { background: var(--win); } .l2 { background: var(--vm); } .l3 { background: var(--hot-soft); } .l4 { background: var(--card); }
+
+  /* tables / grids */
+  table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+  th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { font-size: .8rem; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+  .good { color: var(--ok); font-weight: 600; } .bad { color: var(--warn); font-weight: 600; }
+  .tablewrap { overflow-x: auto; }
+  .grid3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+  .stage { border-radius: 12px; padding: 12px; border: 1px solid var(--line); background: var(--card); }
+  .stage.done { border-color: var(--ok); } .stage.now { border-color: var(--hot); box-shadow: 0 0 0 2px var(--hot-soft); }
+  .stage h4 { margin: 0 0 4px; font-size: .95rem; }
+  .stage ul { margin: 6px 0 0; padding-left: 18px; font-size: .88rem; color: var(--muted); }
+  dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 0; }
+  dt { font-weight: 650; } dd { margin: 0; color: var(--muted); }
+  code { font-family: var(--mono); font-size: .9em; background: var(--hot-soft); padding: 1px 5px; border-radius: 5px; }
+  @media (max-width: 640px) { .stepbox { grid-template-columns: 1fr; } dl { grid-template-columns: 1fr; } dd { margin-bottom: 8px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>How Blood works</h1>
+  <p class="lead">Every time you talk to Blood, your words go on a short trip through a chain of small programs, each doing one job.
+  This chain is called the <b>pipeline</b>. Pick a scenario and press <b>Next</b> to follow one request, step by step, through your Asus.</p>
+
+  <div class="card">
+    <div class="row" style="justify-content: space-between">
+      <div class="row">
+        <span class="label">Scenario</span>
+        <button id="scQ" class="on" onclick="setScenario('q')">Ask a question</button>
+        <button id="scC" onclick="setScenario('c')">Turn on a light</button>
+      </div>
+      <div class="row">
+        <span class="label">Mode</span>
+        <button id="mOff" class="on" onclick="setMode(false)">Offline (our plan)</button>
+        <button id="mOn" class="cloudbtn" onclick="setMode(true)">Online (cloud)</button>
+      </div>
+    </div>
+
+    <svg viewBox="0 0 1000 560" role="img" aria-label="Diagram of the Blood pipeline on the Asus">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="context-stroke"/>
+        </marker>
+      </defs>
+
+      <!-- zones -->
+      <rect class="zone-asus" x="112" y="22" width="752" height="526" rx="18"/>
+      <text class="zone-title" x="130" y="44">THE ASUS (one laptop)</text>
+      <rect class="zone-win" x="130" y="58" width="410" height="476" rx="14"/>
+      <text class="zone-title" x="146" y="80">WINDOWS</text>
+      <rect class="zone-vm" x="560" y="58" width="290" height="476" rx="14"/>
+      <text class="zone-title" x="576" y="80">VIRTUALBOX VM: HOME ASSISTANT</text>
+      <rect x="146" y="92" width="210" height="300" rx="12" fill="none" stroke="var(--win-edge)" stroke-dasharray="4 4"/>
+      <text class="edgelabel" x="156" y="110">Blood program (Python, Stage 4)</text>
+
+      <!-- edges -->
+      <path id="e1"  class="edge" marker-end="url(#arr)" d="M82,210 C110,210 120,146 158,146"/>
+      <path id="e2"  class="edge" marker-end="url(#arr)" d="M251,168 L251,190"/>
+      <path id="e15" class="edge" marker-end="url(#arr)" d="M251,240 L251,272"/>
+      <path id="e14" class="edge" marker-end="url(#arr)" d="M160,226 C138,250 138,330 160,342"/>
+      <path id="e3"  class="edge" marker-end="url(#arr)" d="M346,212 C380,212 390,226 418,226"/>
+      <path id="e4"  class="edge" marker-end="url(#arr)" d="M530,214 C560,200 560,140 588,138"/>
+      <path id="e5"  class="edge" marker-end="url(#arr)" d="M705,162 L705,200"/>
+      <path id="e6"  class="edge" marker-start="url(#arr)" marker-end="url(#arr)" d="M588,252 C550,262 552,470 532,478"/>
+      <path id="e8"  class="edge" marker-end="url(#arr)" d="M705,262 L705,300"/>
+      <path id="e9"  class="edge" marker-end="url(#arr)" d="M590,326 C560,320 560,250 532,244"/>
+      <path id="e10" class="edge" marker-end="url(#arr)" d="M418,244 C380,250 380,296 346,296"/>
+      <path id="e11" class="edge" marker-end="url(#arr)" d="M158,296 C120,296 110,226 82,222"/>
+      <path id="e12" class="edge" marker-end="url(#arr)" d="M800,262 L800,412"/>
+      <path id="e13" class="edge" marker-end="url(#arr)" d="M822,440 L888,440"/>
+      <text class="edgelabel" x="420" y="440">via 10.0.2.2:11434</text>
+      <text class="edgelabel" x="826" y="430">Bluetooth</text>
+
+      <!-- nodes -->
+      <g id="you" class="node"><rect x="14" y="180" width="70" height="72"/><text x="49" y="212" text-anchor="middle" font-size="26">🧑</text><text x="49" y="240" text-anchor="middle">You</text></g>
+      <g id="mic" class="node"><rect x="158" y="122" width="186" height="46"/><text x="172" y="150">🎤 Laptop microphone</text></g>
+      <g id="wake" class="node"><rect x="158" y="190" width="186" height="50"/><text x="172" y="211">👂 Wake word + recorder</text><text class="sub" x="172" y="229">openWakeWord, "Hey Blood"</text></g>
+      <g id="speakers" class="node"><rect x="158" y="272" width="186" height="46"/><text x="172" y="300">🔊 Speakers (AUX jack)</text></g>
+      <g id="screen" class="node"><rect x="158" y="332" width="186" height="46"/><text x="172" y="360">🖥️ Screen window (Stage 5)</text></g>
+      <g id="door" class="node"><rect x="420" y="200" width="112" height="64"/><text x="476" y="224" text-anchor="middle">🚪 The door</text><text class="sub" x="476" y="242" text-anchor="middle">Windows 8123</text><text class="sub" x="476" y="256" text-anchor="middle">→ VM port 80</text></g>
+      <g id="ollama" class="node"><rect x="290" y="450" width="240" height="60"/><text x="306" y="474">🧠 Ollama + qwen3 (the brain)</text><text class="sub" x="306" y="494">runs on the graphics card (GPU)</text></g>
+      <g id="whisper" class="node"><rect x="590" y="112" width="232" height="50"/><text x="606" y="134">📝 Whisper (the ear)</text><text class="sub" x="606" y="152">speech → text</text></g>
+      <g id="conv" class="node"><rect x="590" y="200" width="232" height="62"/><text x="606" y="222">🤔 Conversation (the manager)</text><text class="sub" x="606" y="240">① built-in matcher, no AI</text><text class="sub" x="606" y="254">② if no match: ask the brain</text></g>
+      <g id="piper" class="node"><rect x="590" y="300" width="232" height="50"/><text x="606" y="322">🗣️ Piper (the voice)</text><text class="sub" x="606" y="340">text → speech</text></g>
+      <g id="devices" class="node"><rect x="590" y="412" width="232" height="56"/><text x="606" y="434">📡 Device control</text><text class="sub" x="606" y="452">Hue BLE integration, plugs</text></g>
+      <g id="bulbs" class="node"><rect x="890" y="410" width="100" height="62"/><text x="940" y="436" text-anchor="middle" font-size="20">💡</text><text x="940" y="458" text-anchor="middle">Lights</text></g>
+
+      <!-- online (cloud) overlay -->
+      <g id="cloudLayer">
+        <rect class="cloudbox" x="874" y="40" width="118" height="150" rx="16"/>
+        <text x="933" y="80" text-anchor="middle" font-size="28">☁️</text>
+        <text x="933" y="108" text-anchor="middle" font-size="12" fill="var(--cloud)" font-weight="700">INTERNET</text>
+        <text x="933" y="126" text-anchor="middle" font-size="11" fill="var(--cloud)">company servers</text>
+        <text x="933" y="142" text-anchor="middle" font-size="11" fill="var(--cloud)">(OpenAI, Google,</text>
+        <text x="933" y="157" text-anchor="middle" font-size="11" fill="var(--cloud)">Nabu Casa...)</text>
+        <path class="cloudedge" d="M822,137 C850,137 850,110 874,110"/>
+        <path class="cloudedge" d="M822,325 C860,325 860,170 878,170"/>
+        <path class="cloudedge" d="M410,510 L410,541 L870,541 L870,192 L880,192"/>
+      </g>
+    </svg>
+
+    <div class="stepbox">
+      <div>
+        <div class="stepnum" id="stepnum"></div>
+        <div class="steptitle" id="steptitle"></div>
+        <div id="steptext"></div>
+        <div class="facts" id="facts"></div>
+      </div>
+      <div class="row">
+        <button id="prev" onclick="go(-1)">← Back</button>
+        <button id="next" class="on" onclick="go(1)">Next →</button>
+      </div>
+    </div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="privacy safe" id="privacy"></div>
+  </div>
+
+  <h2>What the brain actually receives</h2>
+  <p class="lead">When Home Assistant asks Ollama a question, it doesn't send just your sentence. It stacks four layers into one message.
+  This is why the system prompt matters, and why it isn't the <i>only</i> thing the model reads.</p>
+  <div class="stack">
+    <div class="layer l1"><b>1. Your system prompt</b> (the one we wrote and tested)<small>Who Blood is, how to speak, the calendar, the honesty rules. You edit this in the Ollama agent's settings.</small></div>
+    <div class="layer l2"><b>2. Home Assistant's hidden part</b><small>Added automatically when "Control Home Assistant" is on: the list of exposed devices, which room you're in, and the tools the AI may use. You can't edit this, so our prompt must not contradict it.</small></div>
+    <div class="layer l3"><b>3. The conversation so far</b><small>The last few back-and-forths, so "the ceiling one" makes sense after "turn on the lamp".</small></div>
+    <div class="layer l4"><b>4. What you just said</b><small>The text Whisper heard, e.g. "what is the capital of Peru".</small></div>
+  </div>
+
+  <h2>Offline vs online: what would change?</h2>
+  <p class="lead">Try the <b>Online (cloud)</b> button above. The ear, brain and voice would be rented from companies on the internet instead of running on your Asus.
+  The pipeline's <i>shape</i> stays exactly the same. Only who does each job changes.</p>
+  <div class="card tablewrap">
+    <table>
+      <tr><th></th><th>Offline (our plan)</th><th>Online (cloud services)</th></tr>
+      <tr><td><b>Privacy</b></td><td class="good">Your voice and questions never leave the laptop</td><td class="bad">Every question (and often the recording) goes to a company</td></tr>
+      <tr><td><b>Cost</b></td><td class="good">€0 (just ~€2/month electricity)</td><td class="bad">Pay per question or a monthly subscription</td></tr>
+      <tr><td><b>Internet goes down</b></td><td class="good">Everything still works, lights included</td><td class="bad">Blood goes deaf and mute</td></tr>
+      <tr><td><b>Smartness</b></td><td>Good for short answers and home control (small model)</td><td class="good">Much smarter, longer reasoning, better at tricky questions</td></tr>
+      <tr><td><b>Live info</b> (weather, news)</td><td class="bad">Not by itself</td><td class="good">Can look things up</td></tr>
+      <tr><td><b>Speed</b></td><td>~1 s brain + ~1–3 s ear (no network trip)</td><td>Similar or faster brain, plus network delay</td></tr>
+      <tr><td><b>Control</b></td><td class="good">You own it; nothing changes unless you change it</td><td class="bad">Prices, rules and services can change or shut down</td></tr>
+    </table>
+  </div>
+
+  <h2>The best of both: an offline brain with online <i>data</i></h2>
+  <div class="grid3">
+    <div class="card"><b>🌦️ The trick</b><p>Home Assistant can fetch small pieces of data from the internet <i>by itself</i>, like the weather forecast (free, no account). It saves the forecast locally. When you ask "will it rain?", Blood reads the saved forecast.</p></div>
+    <div class="card"><b>🔒 What leaves the house</b><p>Only "send me the forecast for my city". Never your voice, never your questions. The brain, ear and voice stay 100% offline.</p></div>
+    <div class="card"><b>🧩 Does it change our plan?</b><p><b>No.</b> The pipeline is modular, like LEGO: each box is one dropdown in <code>Settings → Voice assistants</code>. We can add a data feed or swap one box later without rebuilding anything.</p></div>
+  </div>
+  <p class="lead" style="margin-top:14px"><b>Different idea, also called "online":</b> using Blood or Home Assistant from your phone when you're <i>away</i> from home.
+  That's <b>remote access</b>. It doesn't touch the pipeline at all. Safe options are a private tunnel (e.g. Tailscale, free) or Home Assistant Cloud (paid).
+  The one thing never to do: open a port on your router to the whole internet.</p>
+
+  <h2>Where we are</h2>
+  <div class="stages">
+    <div class="stage done"><h4>✅ Stage 1: Laptop & brain</h4><ul><li>Battery cap, no sleep</li><li>Ollama on the GPU</li></ul></div>
+    <div class="stage done"><h4>✅ Stage 2: Home Assistant</h4><ul><li>VM in VirtualBox (NAT)</li><li>The "door" 8123 → 80</li><li>Your account</li></ul></div>
+    <div class="stage now"><h4>🔶 Stage 3: Wiring it up</h4><ul><li>✅ Auto-start at login</li><li>✅ HA ↔ Ollama</li><li>🔶 System prompt + model choice</li><li>⬜ Whisper + Piper</li><li>⬜ Bluetooth + Hue lights</li></ul></div>
+    <div class="stage"><h4>⬜ Stage 4: Voice program</h4><ul><li>"Hey Blood" wake word</li><li>Mic → HA → speakers</li></ul></div>
+    <div class="stage"><h4>⬜ Stage 5: Screen</h4><ul><li>Text + listening / thinking / speaking animation</li></ul></div>
+  </div>
+
+  <h2>Mini glossary</h2>
+  <div class="card">
+    <dl>
+      <dt>Pipeline</dt><dd>A chain of steps where each one's output is the next one's input: sound → text → answer → sound.</dd>
+      <dt>Wake word</dt><dd>The phrase ("Hey Blood") a tiny always-on program listens for. Nothing else is processed until it hears it.</dd>
+      <dt>STT / TTS</dt><dd>Speech-to-text (Whisper, the ear) and text-to-speech (Piper, the voice).</dd>
+      <dt>LLM</dt><dd>Large language model: the AI brain (qwen3). It only turns text into text.</dd>
+      <dt>Integration</dt><dd>A plug-in that connects Home Assistant to something else: Ollama, Hue bulbs, the weather...</dd>
+      <dt>VM</dt><dd>Virtual machine: a pretend computer running inside your real one. Home Assistant lives in it.</dd>
+      <dt>NAT / port</dt><dd>The VM sits behind VirtualBox like a house behind a gate. A port is a numbered door; we forwarded Windows door 8123 to the VM's door 80.</dd>
+      <dt>10.0.2.2</dt><dd>The address the VM uses to reach Windows itself. That's how Home Assistant finds Ollama.</dd>
+      <dt>System prompt</dt><dd>The job description the brain reads before every question.</dd>
+      <dt>Temperature</dt><dd>How adventurous the brain is when picking words. Low = consistent, high = creative.</dd>
+    </dl>
+  </div>
+</main>
+
+<script>
+const STEPS = {
+  q: [
+    { t: "Waiting for the wake word", n: ["mic","wake"], e: ["e2"],
+      x: "The Blood program listens to the microphone all the time, but only for one thing: \"Hey Blood\". Everything else is thrown away instantly and never saved or sent anywhere.",
+      f: [["Where","Windows"],["Carries","🎵 sound"],["Time","always on"]] },
+    { t: "\"Hey Blood!\" → \"Yes, Tudor?\"", n: ["wake","speakers","screen"], e: ["e15","e14"],
+      x: "The wake word is detected. The program answers \"Yes, Tudor?\" through the speakers and wakes the screen to show it's listening.",
+      f: [["Where","Windows"],["Time","~0.2 s"]] },
+    { t: "You ask your question", n: ["you","mic","wake"], e: ["e1","e2"],
+      x: "\"What's the capital of Peru?\" The program records until you stop talking (about a second of silence).",
+      f: [["Where","Windows"],["Carries","🎵 sound"],["Time","as long as you talk"]] },
+    { t: "Through the door into Home Assistant", n: ["wake","door","whisper"], e: ["e3","e4"],
+      x: "The recording is sent to Home Assistant at localhost:8123. VirtualBox forwards that door to port 80 inside the VM. This is the \"door\" we fixed on day one.",
+      f: [["Where","Windows → VM"],["Carries","🎵 sound"],["Time","instant"]] },
+    { t: "The ear: Whisper turns sound into text", n: ["whisper","conv"], e: ["e5"],
+      x: "Whisper listens to the recording and writes down the words: \"what is the capital of peru\". From here on, only text travels.",
+      f: [["Where","VM (processor)"],["Carries","📝 text"],["Time","~1–3 s"]] },
+    { t: "The manager tries the quick way first", n: ["conv"], e: [],
+      x: "Home Assistant's built-in matcher checks its list of known commands (\"turn on…\", \"what time is it\"…). This is a question about the world, so there's no match, and it decides to ask the brain.",
+      f: [["Where","VM"],["Time","~0.01 s"],["AI used?","not yet"]] },
+    { t: "The brain thinks", n: ["conv","ollama"], e: ["e6"],
+      x: "Home Assistant calls Ollama at 10.0.2.2:11434 and sends the system prompt + your question. The qwen3 model on the graphics card writes: \"The capital of Peru is Lima.\" and sends it back.",
+      f: [["Where","VM → Windows GPU → VM"],["Carries","📝 text"],["Time","~0.3–1 s"]] },
+    { t: "The voice: Piper turns text into speech", n: ["conv","piper"], e: ["e8"],
+      x: "Piper reads the answer aloud into an audio file, in a natural voice.",
+      f: [["Where","VM"],["Carries","📝 → 🎵"],["Time","~0.5 s"]] },
+    { t: "Back out through the door to your speakers", n: ["piper","door","speakers","you","screen"], e: ["e9","e10","e11","e14"],
+      x: "The Blood program downloads the audio and plays it on the AUX speakers, while the screen shows what you said and what Blood replied. Done, in about 3 seconds after you stopped talking.",
+      f: [["Where","VM → Windows"],["Carries","🎵 sound"],["Total","~2–4 s"]] }
+  ]
+};
+// "Turn on a light": same start, but the matcher handles it and the AI is never asked.
+STEPS.c = STEPS.q.map(s => ({...s}));
+STEPS.c[2] = { ...STEPS.q[2], x: "\"Turn on the desk lamp.\" The program records until you stop talking." };
+STEPS.c[4] = { ...STEPS.q[4], x: "Whisper writes down the words: \"turn on the desk lamp\"." };
+STEPS.c[5] = { t: "The manager recognises a command", n: ["conv","devices"], e: ["e12"],
+  x: "The built-in matcher knows this sentence pattern AND knows a device called \"desk lamp\". It's an exact match, so Home Assistant handles it directly. No AI, no guessing. This is the \"prefer handling commands locally\" switch at work.",
+  f: [["Where","VM"],["Time","~0.01 s"],["AI used?","no"]] };
+STEPS.c[6] = { t: "Home Assistant switches the light", n: ["devices","bulbs"], e: ["e13"],
+  x: "The Hue BLE integration sends a Bluetooth message from the Asus straight to the bulb (the Bluetooth adapter is passed through to the VM). The light turns on.",
+  f: [["Where","VM → Bluetooth → bulb"],["Time","~0.3 s"],["AI used?","no"]] };
+STEPS.c[7] = { ...STEPS.q[7], n: ["devices","piper"], e: [], x: "Home Assistant's built-in reply, \"Turned on the desk lamp\", goes to Piper to be spoken." };
+STEPS.c[8] = { ...STEPS.q[8], x: "The confirmation plays on your speakers. Commands are often faster than questions, because the brain was never needed." };
+
+let scenario = "q", step = 0, online = false;
+const $ = id => document.getElementById(id);
+
+function render() {
+  const list = STEPS[scenario], s = list[step];
+  document.querySelectorAll(".node").forEach(g => g.classList.toggle("active", s.n.includes(g.id)));
+  document.querySelectorAll(".edge").forEach(p => p.classList.toggle("active", s.e.includes(p.id)));
+  $("stepnum").textContent = `STEP ${step + 1} OF ${list.length}`;
+  $("steptitle").textContent = s.t;
+  let txt = s.x;
+  if (online && ["whisper","ollama","piper"].some(n => s.n.includes(n)))
+    txt += " ☁️ In online mode, this part would happen on a company's server over the internet instead.";
+  $("steptext").textContent = txt;
+  $("facts").innerHTML = s.f.map(([k, v]) => `<span class="chip">${k}: <b>${v}</b></span>`).join("");
+  $("bar").style.width = ((step + 1) / list.length * 100) + "%";
+  $("prev").disabled = step === 0;
+  $("next").disabled = step === list.length - 1;
+}
+function go(d) { step = Math.max(0, Math.min(STEPS[scenario].length - 1, step + d)); render(); }
+function setScenario(sc) {
+  scenario = sc; step = 0;
+  $("scQ").classList.toggle("on", sc === "q"); $("scC").classList.toggle("on", sc === "c");
+  render();
+}
+function setMode(on) {
+  online = on;
+  $("mOff").classList.toggle("on", !on); $("mOn").classList.toggle("on", on);
+  $("cloudLayer").classList.toggle("show", on);
+  ["whisper","ollama","piper"].forEach(id => $(id).classList.toggle("cloudy", on));
+  const p = $("privacy");
+  p.className = "privacy " + (on ? "leak" : "safe");
+  p.textContent = on
+    ? "☁️ Online mode: your recording and questions travel to company servers on the internet."
+    : "🔒 Offline mode: your voice and questions never leave the Asus. Not even your router sees them.";
+  render();
+}
+document.addEventListener("keydown", e => { if (e.key === "ArrowRight") go(1); if (e.key === "ArrowLeft") go(-1); });
+setMode(false);
+</script>
+</body>
+</html>
