@@ -116,7 +116,7 @@ Each chapter explains its own decision in more detail.
 | 05 | [The ear: speech-to-text](05-ear-speech-to-text.md) | ✅ |
 | 06 | [The voice: text-to-speech](06-voice-text-to-speech.md) | ✅ |
 | 07 | [Bluetooth into the VM](07-bluetooth-passthrough.md) | ✅ (optional) |
-| 08 | [Lights and plugs](08-lights-and-plugs.md) | 🟡 bulb done, plug next |
+| 08 | [Lights and plugs](08-lights-and-plugs.md) | 🟡 bulb + plug done, voice control next |
 | 09 | [Wake word and our own voice program](09-wake-word-and-voice-program.md) | ⬜ planned |
 | 10 | [The screen](10-screen.md) | ⬜ planned |
 | 11 | [Maintenance and troubleshooting](11-maintenance-and-troubleshooting.md) | ✅ (grows over time) |

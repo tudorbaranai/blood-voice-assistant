@@ -37,8 +37,8 @@ on one old Windows laptop, costs nothing, and your voice never leaves your home.
 | Voice: Piper | ✅ |
 | Bluetooth into the VM | ✅ (optional, unused for now) |
 | WiZ bulb in Home Assistant | ✅ |
-| Smart plug, local (Tuya Local) | 🟡 next |
-| Device names + device-aware prompt v7 | ⬜ |
+| Smart plug, local (Tuya Local) | ✅ |
+| Device names + device-aware prompt v7 | 🟡 next |
 | "Hey Blood" wake word + own voice program | ⬜ |
 | Screen window | ⬜ |
 

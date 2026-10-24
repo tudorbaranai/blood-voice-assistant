@@ -89,29 +89,83 @@ Home, Home Assistant may take a few seconds to notice.
 
 ---
 
-## Part 2 · A Tuya-based Wi-Fi plug (LSC Smart Connect) 🟡 next
+## Part 2 · A Tuya-based Wi-Fi plug (LSC Smart Connect) ✅
 
 LSC Smart Connect (sold at Action) is a rebranded **Tuya** app. Tuya devices
 can be controlled two ways:
 - **Cloud** (official *Tuya* integration): easy, but every command goes
   through Tuya's internet servers. ❌ Not offline.
-- **Local** (*Tuya Local* from HACS): Home Assistant talks to the plug directly
-  using a secret **local key**, fetched once. ✅ Offline. **Our choice.**
+- **Local** ([*Tuya Local*](https://github.com/make-all/tuya-local), a community
+  integration): Home Assistant talks to the plug directly, using a secret
+  **local key** fetched once. ✅ Offline. **Our choice.**
 
-Plan (to be completed and written up):
-1. Move the plug from the LSC app to the **Smart Life** app, on the same 2.4 GHz
-   network as the laptop.
-2. Install **HACS** (the community store for Home Assistant; needs a GitHub login).
-3. Install **Tuya Local** from HACS and add the plug, fetching the local key once.
-4. Fixed IP in the router, as for the bulb.
+*Why a key?* Tuya plugs encrypt their local messages, so nobody else on your
+Wi-Fi can switch them. Tuya Local borrows the key once from your Smart Life
+account, then never needs the internet again.
 
-Warnings we already know: **don't reset or re-pair the plug afterwards**, since
-the local key changes. And close the Smart Life app if the plug acts up, because
-some Tuya plugs accept only one local connection at a time.
+### 1. Move the plug to the Smart Life app
+Tuya Local logs in with **Smart Life** (Tuya's own app), not with rebranded apps like LSC.
+1. Phone on the **same 2.4 GHz Wi-Fi** as the laptop's router. Install **Smart Life**, create an account.
+2. LSC Smart Connect app → the plug → **Remove device**.
+3. Reset the plug: hold its button ~5 s until the light **blinks fast**.
+4. Smart Life → **+ → Add Device** (it usually finds it by Bluetooth; otherwise
+   *Electrical → Socket (Wi-Fi)*) → choose that 2.4 GHz Wi-Fi → name it.
+5. Optional: Google Home → **+ → Works with Google → Smart Life** to keep it in Google Home.
+
+> The "IP" shown in Smart Life's device info is your home's **public internet
+> address** (what Tuya's cloud sees), not the plug's address inside your home.
+> Find the local one in your router's client list (Tuya plugs often show up as
+> `lwip0`), and reserve it there like the bulb's.
+
+⚠️ **From now on, don't reset or re-pair the plug:** each re-pair changes its key.
+
+### 2. Get Tuya Local into Home Assistant
+**Normal way, through HACS** (the community "app store" for Home Assistant;
+from Home Assistant 2026.11 it's built in as the *Marketplace*):
+1. Settings → Add-ons/Apps → store → ⋮ → **Repositories** → add `https://github.com/hacs/addons`.
+2. Install and start **Get HACS**, and follow its log. Then **restart Home Assistant**.
+3. Settings → Devices & services → **+ Add Integration → HACS** → tick the boxes →
+   enter the shown code at https://github.com/login/device.
+4. HACS → search **Tuya Local** → Download → restart Home Assistant.
+
+> 💡 **If this is your case: HACS says "Could not register" and shows no code.**
+> In October 2026 the Home Assistant log showed
+> `Request exception for 'https://github.com/login/device/code' with - 400, message='Got more than 8190 bytes when reading'`.
+> GitHub's reply carried a ~9 KB security header, bigger than the 8 KB limit of
+> the library HACS uses. That's a GitHub-side problem, nothing in your setup.
+> **What helped in our case: install Tuya Local by hand**, the same files from the
+> same place. In the VM console, type `login` at the `ha >` prompt, then (use
+> the [latest release](https://github.com/make-all/tuya-local/releases) number instead of `2026.10.0`):
+> ```sh
+> docker exec homeassistant sh -c "cd /tmp && curl -sL -o tl.zip https://github.com/make-all/tuya-local/archive/refs/tags/2026.10.0.zip && unzip -q tl.zip -d tl && cp -r tl/*/custom_components/tuya_local /config/custom_components/ && rm -rf tl tl.zip"
+> exit
+> ```
+> Then restart Home Assistant. (Downside: no automatic update notices until
+> HACS works again.)
+
+### 3. Add the plug
+1. **Settings → Devices & services → + Add Integration → Tuya Local** →
+   **cloud-assisted** setup → log in with the Smart Life account (it may ask for
+   the **User Code**: Smart Life → *Me → ⚙️ → Account and Security*, and a QR
+   code to scan with Smart Life).
+2. Pick the plug. The device ID and local key fill in by themselves.
+   **Host:** the plug's local IP. **Protocol:** `auto`.
+3. Pick the matching type (a plug **with energy monitoring**), give it a sayable name, and finish.
+
+### Check it worked
+Switch it from Home Assistant; power readings (watts) appear.
+If it misbehaves, **close the Smart Life app on your phone**: many Tuya plugs
+accept only one local connection at a time.
+
+### What went wrong for us
+| Problem | Cause | Fix |
+|---|---|---|
+| Smart Life showed an IP that wasn't the plug's home address | it shows the home's public internet address | use the router's client list for the local IP |
+| HACS: "Could not register", no code | GitHub's oversized header (see box) | installed Tuya Local by hand |
 
 ---
 
-## Part 3 · Names, rooms and what Blood may touch ⬜
+## Part 3 · Names, rooms and what Blood may touch 🟡 next
 
 Good names matter more than prompt wording for small models:
 1. A clear, unique, sayable **name** for each device: "Bedroom light", "Desk

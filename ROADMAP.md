@@ -22,7 +22,7 @@ Tick the boxes `[x]` as you go.
 | HA updated to 2026.10.1 | ✅ |
 | Bluetooth passed into the VM (B1) | ✅ 13 Oct (not needed for now: no Hue bulbs) |
 | Bedroom light = **WiZ** Wi-Fi bulb (not Hue!), in HA via the WiZ integration, fixed IP | ✅ 13 Oct |
-| LSC plug, local (Tuya Local) | 🟡 next: B3 |
+| LSC plug, local (Tuya Local), named "Bed lights"; bulb named "Main light" | ✅ 24 Oct (HACS login broken by GitHub → Tuya Local installed by hand) |
 | Names, rooms, prompt v7 | ⬜ B4–B6 |
 | "Hey Blood" + our own voice program | ⬜ Part C |
 | Screen window | ⬜ Part D |
