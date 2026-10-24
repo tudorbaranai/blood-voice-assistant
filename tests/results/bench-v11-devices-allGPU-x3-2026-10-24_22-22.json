@@ -1,0 +1,1108 @@
+{
+ "label": "v11-devices-allGPU-x3",
+ "model": "qwen3:4b-instruct",
+ "prompt": "prompt_v11_devices.txt",
+ "time": "2026-10-24_22-22",
+ "passed": 78,
+ "total": 90,
+ "lies": 10,
+ "avg_s": 1.7,
+ "worst_s": 3.3,
+ "by_cat": {
+  "control": [
+   33,
+   33
+  ],
+  "implicit": [
+   4,
+   12
+  ],
+  "state": [
+   18,
+   18
+  ],
+  "ambiguous": [
+   3,
+   3
+  ],
+  "missing": [
+   14,
+   15
+  ],
+  "multi": [
+   6,
+   9
+  ]
+ },
+ "rows": [
+  {
+   "id": 1,
+   "cat": "control",
+   "say": "Turn on the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 1,
+   "cat": "control",
+   "say": "Turn on the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 1,
+   "cat": "control",
+   "say": "Turn on the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 2,
+   "cat": "control",
+   "say": "Turn off the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now off.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOff(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 2,
+   "cat": "control",
+   "say": "Turn off the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now off.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOff(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 2,
+   "cat": "control",
+   "say": "Turn off the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now off.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOff(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 3,
+   "cat": "control",
+   "say": "Turn on the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are on.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 3,
+   "cat": "control",
+   "say": "Turn on the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are on.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 3,
+   "cat": "control",
+   "say": "Turn on the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are on.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 4,
+   "cat": "control",
+   "say": "Switch off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 4,
+   "cat": "control",
+   "say": "Switch off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are now off.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 4,
+   "cat": "control",
+   "say": "Switch off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are now off.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 5,
+   "cat": "control",
+   "say": "Turn off all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now off.",
+   "secs": 2.0,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 5,
+   "cat": "control",
+   "say": "Turn off all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now off.",
+   "secs": 2.4,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 5,
+   "cat": "control",
+   "say": "Turn off all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now off.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 6,
+   "cat": "control",
+   "say": "Turn on all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are on.",
+   "secs": 1.9,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 6,
+   "cat": "control",
+   "say": "Turn on all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 6,
+   "cat": "control",
+   "say": "Turn on all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 7,
+   "cat": "control",
+   "say": "Lights on.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and bed lights are now on.",
+   "secs": 2.5,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 7,
+   "cat": "control",
+   "say": "Lights on.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 7,
+   "cat": "control",
+   "say": "Lights on.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and bed lights are now on.",
+   "secs": 2.5,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 8,
+   "cat": "control",
+   "say": "Lights off please.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now off.",
+   "secs": 2.4,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 8,
+   "cat": "control",
+   "say": "Lights off please.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now off.",
+   "secs": 2.7,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 8,
+   "cat": "control",
+   "say": "Lights off please.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now off.",
+   "secs": 2.7,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 9,
+   "cat": "control",
+   "say": "Can you turn on the main light?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 9,
+   "cat": "control",
+   "say": "Can you turn on the main light?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 9,
+   "cat": "control",
+   "say": "Can you turn on the main light?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 10,
+   "cat": "control",
+   "say": "Blood, turn off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are now off.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 10,
+   "cat": "control",
+   "say": "Blood, turn off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 10,
+   "cat": "control",
+   "say": "Blood, turn off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 1.6,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 11,
+   "cat": "control",
+   "say": "Turn on the main light and the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and bed lights are now on.",
+   "secs": 3.3,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)",
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 11,
+   "cat": "control",
+   "say": "Turn on the main light and the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and bed lights are now on.",
+   "secs": 3.2,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)",
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 11,
+   "cat": "control",
+   "say": "Turn on the main light and the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and bed lights are now on.",
+   "secs": 3.2,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)",
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 18,
+   "cat": "implicit",
+   "say": "It's too dark in here.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded",
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I'll turn on the lights for you.",
+   "secs": 0.4,
+   "tools": []
+  },
+  {
+   "id": 18,
+   "cat": "implicit",
+   "say": "It's too dark in here.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded",
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I'll turn on the lights for you.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 18,
+   "cat": "implicit",
+   "say": "It's too dark in here.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded",
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I'll turn on the lights for you.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 19,
+   "cat": "implicit",
+   "say": "I can't see anything, it's so dark.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded",
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I'll turn on the lights for you.",
+   "secs": 0.4,
+   "tools": []
+  },
+  {
+   "id": 19,
+   "cat": "implicit",
+   "say": "I can't see anything, it's so dark.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded",
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I'll turn on the lights for you.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 19,
+   "cat": "implicit",
+   "say": "I can't see anything, it's so dark.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded",
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I'll turn on the lights for you.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 20,
+   "cat": "implicit",
+   "say": "I'm going to sleep, good night.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now off. Good night, Tudor.",
+   "secs": 3.1,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 20,
+   "cat": "implicit",
+   "say": "I'm going to sleep, good night.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now off. Good night, Tudor.",
+   "secs": 2.9,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 20,
+   "cat": "implicit",
+   "say": "I'm going to sleep, good night.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now off. Good night, Tudor.",
+   "secs": 2.9,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 21,
+   "cat": "implicit",
+   "say": "It's way too bright in here.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded"
+   ],
+   "text": "I'll turn down the lights for you.",
+   "secs": 0.4,
+   "tools": []
+  },
+  {
+   "id": 21,
+   "cat": "implicit",
+   "say": "It's way too bright in here.",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded"
+   ],
+   "text": "I'll turn down the brightness for you.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 21,
+   "cat": "implicit",
+   "say": "It's way too bright in here.",
+   "ok": true,
+   "problems": [],
+   "text": "I'll reduce the brightness for you.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 22,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the main light is on at full brightness.",
+   "secs": 2.8,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 22,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the main light is on at full brightness.",
+   "secs": 2.7,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 22,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the main light is on at full brightness.",
+   "secs": 2.6,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 23,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is off.",
+   "secs": 2.5,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 23,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is off.",
+   "secs": 1.9,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 23,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is off.",
+   "secs": 2.5,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 24,
+   "cat": "state",
+   "say": "Are the bed lights on?",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 2.6,
+   "tools": [
+    "GetLiveContext(name=Bed lights, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 24,
+   "cat": "state",
+   "say": "Are the bed lights on?",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 2.5,
+   "tools": [
+    "GetLiveContext(name=Bed lights, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 24,
+   "cat": "state",
+   "say": "Are the bed lights on?",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 2.5,
+   "tools": [
+    "GetLiveContext(name=Bed lights, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 25,
+   "cat": "state",
+   "say": "Are the bed lights on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the bed lights are on right now.",
+   "secs": 2.0,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 25,
+   "cat": "state",
+   "say": "Are the bed lights on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the bed lights are on right now.",
+   "secs": 2.6,
+   "tools": [
+    "GetLiveContext(name=Bed lights, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 25,
+   "cat": "state",
+   "say": "Are the bed lights on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the bed lights are on right now.",
+   "secs": 2.6,
+   "tools": [
+    "GetLiveContext(name=Bed lights, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 26,
+   "cat": "state",
+   "say": "Which lights are on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on, and the bed lights are off.",
+   "secs": 2.9,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 26,
+   "cat": "state",
+   "say": "Which lights are on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on at full brightness. The bed lights are off.",
+   "secs": 2.9,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 26,
+   "cat": "state",
+   "say": "Which lights are on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on at full brightness. The bed lights are off.",
+   "secs": 2.9,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 27,
+   "cat": "state",
+   "say": "What lights do I have?",
+   "ok": true,
+   "problems": [],
+   "text": "You have two lights: the Main light in the Dormitor and the Bed lights in the Dormitor.",
+   "secs": 0.8,
+   "tools": []
+  },
+  {
+   "id": 27,
+   "cat": "state",
+   "say": "What lights do I have?",
+   "ok": true,
+   "problems": [],
+   "text": "You have two lights in the Dormitor: the Main light and the Bed lights.",
+   "secs": 0.5,
+   "tools": []
+  },
+  {
+   "id": 27,
+   "cat": "state",
+   "say": "What lights do I have?",
+   "ok": true,
+   "problems": [],
+   "text": "You have two lights in the Dormitor: the Main light and the Bed lights.",
+   "secs": 0.5,
+   "tools": []
+  },
+  {
+   "id": 28,
+   "cat": "ambiguous",
+   "say": "Turn on the light.",
+   "ok": true,
+   "problems": [],
+   "text": "The lights are on.",
+   "secs": 2.0,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 28,
+   "cat": "ambiguous",
+   "say": "Turn on the light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and bed lights are now on.",
+   "secs": 2.0,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 28,
+   "cat": "ambiguous",
+   "say": "Turn on the light.",
+   "ok": true,
+   "problems": [],
+   "text": "The lights are now on.",
+   "secs": 1.8,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=[])"
+   ]
+  },
+  {
+   "id": 29,
+   "cat": "missing",
+   "say": "Turn on the garage light.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any information about a garage light in the home setup. Could you please confirm if you meant one of the existing lights like the Main light or Bed lights in the Dormitor?",
+   "secs": 1.2,
+   "tools": []
+  },
+  {
+   "id": 29,
+   "cat": "missing",
+   "say": "Turn on the garage light.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have a garage light in the system. I can only control the lights in the dormitor.",
+   "secs": 0.7,
+   "tools": []
+  },
+  {
+   "id": 29,
+   "cat": "missing",
+   "say": "Turn on the garage light.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any information about a garage light in the home setup. Could you please confirm if you meant one of the existing lights like the Main light or Bed lights in the Dormitor?",
+   "secs": 1.1,
+   "tools": []
+  },
+  {
+   "id": 30,
+   "cat": "missing",
+   "say": "Turn on the TV.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the TV because it's not listed in the home devices.",
+   "secs": 0.6,
+   "tools": []
+  },
+  {
+   "id": 30,
+   "cat": "missing",
+   "say": "Turn on the TV.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have control over the TV.",
+   "secs": 0.3,
+   "tools": []
+  },
+  {
+   "id": 30,
+   "cat": "missing",
+   "say": "Turn on the TV.",
+   "ok": false,
+   "problems": [
+    "doesn't say it can't"
+   ],
+   "text": "I don't know about the TV. You might have a device list I'm not aware of.",
+   "secs": 0.6,
+   "tools": []
+  },
+  {
+   "id": 31,
+   "cat": "missing",
+   "say": "Turn on the kitchen lights.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any kitchen lights in the system. I can only control the lights in the dormitor.",
+   "secs": 0.7,
+   "tools": []
+  },
+  {
+   "id": 31,
+   "cat": "missing",
+   "say": "Turn on the kitchen lights.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any kitchen lights in the system. I can only control the lights in the dormitor.",
+   "secs": 0.7,
+   "tools": []
+  },
+  {
+   "id": 31,
+   "cat": "missing",
+   "say": "Turn on the kitchen lights.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any kitchen lights in the system. I can only control the lights in the dormitor.",
+   "secs": 0.7,
+   "tools": []
+  },
+  {
+   "id": 32,
+   "cat": "missing",
+   "say": "Turn on the fan.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the fan because it's not listed in the home devices.",
+   "secs": 0.6,
+   "tools": []
+  },
+  {
+   "id": 32,
+   "cat": "missing",
+   "say": "Turn on the fan.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the fan because it's not listed in the home devices.",
+   "secs": 0.5,
+   "tools": []
+  },
+  {
+   "id": 32,
+   "cat": "missing",
+   "say": "Turn on the fan.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the fan because it's not listed in the home devices.",
+   "secs": 0.5,
+   "tools": []
+  },
+  {
+   "id": 33,
+   "cat": "missing",
+   "say": "Lock the front door.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't lock the front door because I don't have information about a front door or any lock device in the system.",
+   "secs": 0.9,
+   "tools": []
+  },
+  {
+   "id": 33,
+   "cat": "missing",
+   "say": "Lock the front door.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't lock the front door because I don't have information about a door lock device in the system.",
+   "secs": 0.7,
+   "tools": []
+  },
+  {
+   "id": 33,
+   "cat": "missing",
+   "say": "Lock the front door.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the front door. I only know about lights in the dormitor.",
+   "secs": 0.6,
+   "tools": []
+  },
+  {
+   "id": 54,
+   "cat": "multi",
+   "say": "Turn on the main light. >> Now turn it off.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now off.",
+   "secs": 2.0,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])",
+    "HassTurnOff(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 54,
+   "cat": "multi",
+   "say": "Turn on the main light. >> Now turn it off.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now off.",
+   "secs": 1.9,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])",
+    "HassTurnOff(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 54,
+   "cat": "multi",
+   "say": "Turn on the main light. >> Now turn it off.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is off.",
+   "secs": 2.0,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])",
+    "HassTurnOff(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 55,
+   "cat": "multi",
+   "say": "Turn on the bed lights. >> And the main light too.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)",
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 55,
+   "cat": "multi",
+   "say": "Turn on the bed lights. >> And the main light too.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)",
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 55,
+   "cat": "multi",
+   "say": "Turn on the bed lights. >> And the main light too.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 1.7,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)",
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 56,
+   "cat": "multi",
+   "say": "It's too dark in here. >> Is the main light on now?",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded"
+   ],
+   "text": "The main light is currently off. I'll turn it on for you.",
+   "secs": 1.4,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 56,
+   "cat": "multi",
+   "say": "It's too dark in here. >> Is the main light on now?",
+   "ok": false,
+   "problems": [
+    "answer doesn't match reality (Main light is off)"
+   ],
+   "text": "I'll check the current state of the main light for you.",
+   "secs": 0.5,
+   "tools": []
+  },
+  {
+   "id": 56,
+   "cat": "multi",
+   "say": "It's too dark in here. >> Is the main light on now?",
+   "ok": false,
+   "problems": [
+    "LIE: claims an action but no switch tool succeeded"
+   ],
+   "text": "The main light is currently off. I'll turn it on for you.",
+   "secs": 1.3,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  }
+ ]
+}

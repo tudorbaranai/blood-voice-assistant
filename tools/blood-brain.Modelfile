@@ -1,0 +1,27 @@
+# blood-brain: Blood's tuned version of qwen3:4b-instruct
+#
+# A Modelfile is a small recipe: "take this model and change these settings".
+# It reuses the same model file (no download). Create or update it with:
+#     ollama create blood-brain -f tools\blood-brain.Modelfile
+# Then pick "blood-brain" as the model in Home Assistant's Ollama agent.
+# Undo: pick qwen3:4b-instruct again (and optionally: ollama rm blood-brain).
+#
+# Why: Home Assistant's Ollama integration can't set these, so we bake them in.
+# Tested with tests/blood_bench.py (see docs/tutorial/04).
+
+FROM qwen3:4b-instruct
+
+# Put ALL layers on the graphics card. Ollama's own guess left ~27% on the slow CPU.
+# Measured: ~1.4 s per answer instead of 3-6 s. Uses ~3.4 GB of the 4 GB card,
+# so quit Ollama before gaming (tools/gaming-mode.cmd).
+PARAMETER num_gpu 99
+
+# Answer-length cap. Without it, the model once wrote 6,000+ words in a loop,
+# which would hang Blood for minutes. 400 tokens is plenty for spoken answers.
+PARAMETER num_predict 400
+
+# Less random word choice (default 0.7). Same test score, steadier behaviour.
+PARAMETER temperature 0.2
+
+# Same memory size Home Assistant asks for.
+PARAMETER num_ctx 4096

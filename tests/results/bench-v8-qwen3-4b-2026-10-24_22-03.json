@@ -1,0 +1,680 @@
+{
+ "label": "v8-qwen3-4b",
+ "model": "qwen3:4b-instruct",
+ "prompt": "prompt_v8_devices.txt",
+ "time": "2026-10-24_22-03",
+ "passed": 50,
+ "total": 56,
+ "lies": 0,
+ "avg_s": 6.2,
+ "worst_s": 14.8,
+ "by_cat": {
+  "control": [
+   10,
+   11
+  ],
+  "naming": [
+   2,
+   2
+  ],
+  "brightness": [
+   4,
+   4
+  ],
+  "implicit": [
+   2,
+   4
+  ],
+  "state": [
+   6,
+   6
+  ],
+  "ambiguous": [
+   1,
+   1
+  ],
+  "missing": [
+   5,
+   5
+  ],
+  "knowledge": [
+   17,
+   20
+  ],
+  "multi": [
+   3,
+   3
+  ]
+ },
+ "rows": [
+  {
+   "id": 1,
+   "cat": "control",
+   "say": "Turn on the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 10.4,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 2,
+   "cat": "control",
+   "say": "Turn off the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now off.",
+   "secs": 14.5,
+   "tools": [
+    "HassTurnOff(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 3,
+   "cat": "control",
+   "say": "Turn on the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are on.",
+   "secs": 9.5,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 4,
+   "cat": "control",
+   "say": "Switch off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are now off.",
+   "secs": 8.9,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 5,
+   "cat": "control",
+   "say": "Turn off all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now off.",
+   "secs": 10.9,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 6,
+   "cat": "control",
+   "say": "Turn on all the lights.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights in the dormitor are now on.",
+   "secs": 10.6,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 7,
+   "cat": "control",
+   "say": "Lights on.",
+   "ok": false,
+   "problems": [
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I can only control the lights in the Dormitor area. Which light would you like me to turn on, the Main light or the Bed lights?",
+   "secs": 6.0,
+   "tools": []
+  },
+  {
+   "id": 8,
+   "cat": "control",
+   "say": "Lights off please.",
+   "ok": true,
+   "problems": [],
+   "text": "All the lights are now off.",
+   "secs": 8.8,
+   "tools": [
+    "HassTurnOff(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 9,
+   "cat": "control",
+   "say": "Can you turn on the main light?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now on.",
+   "secs": 8.4,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 10,
+   "cat": "control",
+   "say": "Blood, turn off the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are now off.",
+   "secs": 7.9,
+   "tools": [
+    "HassTurnOff(name=Bed lights, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 11,
+   "cat": "control",
+   "say": "Turn on the main light and the bed lights.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light and the bed lights are now on.",
+   "secs": 14.8,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])",
+    "HassTurnOn(name=Bed lights, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 12,
+   "cat": "naming",
+   "say": "Turn on the lights in the bedroom.",
+   "ok": true,
+   "problems": [],
+   "text": "The lights in the bedroom are now on.",
+   "secs": 10.3,
+   "tools": [
+    "HassTurnOn(domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 13,
+   "cat": "naming",
+   "say": "Turn on the ceiling light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light in the dormitor is now on.",
+   "secs": 9.9,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 14,
+   "cat": "brightness",
+   "say": "Set the main light to 30 percent.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now at 30 percent brightness.",
+   "secs": 9.6,
+   "tools": [
+    "HassLightSet(name=Main light, brightness=30)"
+   ]
+  },
+  {
+   "id": 15,
+   "cat": "brightness",
+   "say": "Dim the main light.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now dimmed to 50%.",
+   "secs": 8.7,
+   "tools": [
+    "HassLightSet(name=Main light, domain=['light'], brightness=50)"
+   ]
+  },
+  {
+   "id": 16,
+   "cat": "brightness",
+   "say": "Make the main light blue.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now blue.",
+   "secs": 8.4,
+   "tools": [
+    "HassLightSet(name=Main light, domain=['light'], color=blue)"
+   ]
+  },
+  {
+   "id": 17,
+   "cat": "brightness",
+   "say": "Turn the main light to full brightness.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is now at full brightness.",
+   "secs": 7.7,
+   "tools": [
+    "HassLightSet(name=Main light, domain=['light'], brightness=100)"
+   ]
+  },
+  {
+   "id": 18,
+   "cat": "implicit",
+   "say": "It's too dark in here.",
+   "ok": false,
+   "problems": [
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "I can help with that. Would you like me to turn on the main light or the bed lights in the dormitor?",
+   "secs": 4.5,
+   "tools": []
+  },
+  {
+   "id": 19,
+   "cat": "implicit",
+   "say": "I can't see anything, it's so dark.",
+   "ok": false,
+   "problems": [
+    "nothing was turned on",
+    "no switch tool succeeded"
+   ],
+   "text": "The main light in the dormitor is off. I'll turn it on for you.",
+   "secs": 3.4,
+   "tools": []
+  },
+  {
+   "id": 20,
+   "cat": "implicit",
+   "say": "I'm going to sleep, good night.",
+   "ok": true,
+   "problems": [],
+   "text": "Good night, Tudor. Sleep well.",
+   "secs": 2.9,
+   "tools": []
+  },
+  {
+   "id": 21,
+   "cat": "implicit",
+   "say": "It's way too bright in here.",
+   "ok": true,
+   "problems": [],
+   "text": "I can help with that. How bright do you want it to be?",
+   "secs": 3.8,
+   "tools": []
+  },
+  {
+   "id": 22,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the main light is on at full brightness.",
+   "secs": 10.9,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 23,
+   "cat": "state",
+   "say": "Is the main light on?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is off.",
+   "secs": 8.7,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 24,
+   "cat": "state",
+   "say": "Are the bed lights on?",
+   "ok": true,
+   "problems": [],
+   "text": "The bed lights are off.",
+   "secs": 7.8,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 25,
+   "cat": "state",
+   "say": "Are the bed lights on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "Yes, the bed lights are on right now.",
+   "secs": 12.7,
+   "tools": [
+    "GetLiveContext(name=Bed lights, domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 26,
+   "cat": "state",
+   "say": "Which lights are on right now?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on at full brightness. The bed lights are off.",
+   "secs": 12.0,
+   "tools": [
+    "GetLiveContext(domain=light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 27,
+   "cat": "state",
+   "say": "What lights do I have?",
+   "ok": true,
+   "problems": [],
+   "text": "You have a Main light and Bed lights in the Dormitor.",
+   "secs": 3.4,
+   "tools": []
+  },
+  {
+   "id": 28,
+   "cat": "ambiguous",
+   "say": "Turn on the light.",
+   "ok": true,
+   "problems": [],
+   "text": "The Main light in the Dormitor is now on.",
+   "secs": 7.7,
+   "tools": [
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 29,
+   "cat": "missing",
+   "say": "Turn on the garage light.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any information about a garage light in the home setup. Could you please confirm if you meant one of the existing lights like the Main light or Bed lights in the Dormitor?",
+   "secs": 5.1,
+   "tools": []
+  },
+  {
+   "id": 30,
+   "cat": "missing",
+   "say": "Turn on the TV.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the TV because it's not listed in the home devices.",
+   "secs": 5.2,
+   "tools": []
+  },
+  {
+   "id": 31,
+   "cat": "missing",
+   "say": "Turn on the kitchen lights.",
+   "ok": true,
+   "problems": [],
+   "text": "I don't have any kitchen lights in the system. I can only control lights in the dormitor.",
+   "secs": 4.2,
+   "tools": []
+  },
+  {
+   "id": 32,
+   "cat": "missing",
+   "say": "Turn on the fan.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control the fan because it's not listed in the home devices.",
+   "secs": 3.0,
+   "tools": []
+  },
+  {
+   "id": 33,
+   "cat": "missing",
+   "say": "Lock the front door.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't control locks because no lock device is listed in the home setup.",
+   "secs": 2.9,
+   "tools": []
+  },
+  {
+   "id": 34,
+   "cat": "knowledge",
+   "say": "What's the capital of Peru?",
+   "ok": true,
+   "problems": [],
+   "text": "The capital of Peru is Lima.",
+   "secs": 2.4,
+   "tools": []
+  },
+  {
+   "id": 35,
+   "cat": "knowledge",
+   "say": "Give me a list of the top 10 greatest generals of all time.",
+   "ok": false,
+   "problems": [
+    "refused / 'not sure'"
+   ],
+   "text": "I'm not sure about the top 10 greatest generals of all time as it's a subjective list. Famous ones include Hannibal, Alexander the Great, Sun Tzu, and Napoleon.",
+   "secs": 6.1,
+   "tools": []
+  },
+  {
+   "id": 36,
+   "cat": "knowledge",
+   "say": "Name some of Alexander the Great's generals.",
+   "ok": true,
+   "problems": [],
+   "text": "Some of Alexander the Great's generals are Parmenion, Hephaestion, Ptolemy, Craterus, and Leonnatus.",
+   "secs": 6.0,
+   "tools": []
+  },
+  {
+   "id": 37,
+   "cat": "knowledge",
+   "say": "Who is better, Messi or Ronaldo?",
+   "ok": true,
+   "problems": [],
+   "text": "I prefer Lionel Messi because he is known for his exceptional dribbling and goal-scoring ability.",
+   "secs": 3.1,
+   "tools": []
+  },
+  {
+   "id": 38,
+   "cat": "knowledge",
+   "say": "Tell me a joke.",
+   "ok": true,
+   "problems": [],
+   "text": "Why don't scientists trust atoms? Because they make up everything.",
+   "secs": 5.1,
+   "tools": []
+  },
+  {
+   "id": 39,
+   "cat": "knowledge",
+   "say": "How many kilometres are in a mile?",
+   "ok": true,
+   "problems": [],
+   "text": "One mile is equal to 1.60934 kilometres.",
+   "secs": 2.9,
+   "tools": []
+  },
+  {
+   "id": 40,
+   "cat": "knowledge",
+   "say": "What is 15 times 12?",
+   "ok": true,
+   "problems": [],
+   "text": "15 times 12 is 180.",
+   "secs": 4.3,
+   "tools": []
+  },
+  {
+   "id": 41,
+   "cat": "knowledge",
+   "say": "Give me a quick recipe for scrambled eggs.",
+   "ok": true,
+   "problems": [],
+   "text": "Sure. Here's a quick recipe: Crack 2 eggs into a bowl, add a splash of milk or water, whisk until smooth. Heat a pan over medium heat, add a little oil or butter, pour in the eggs, and scramble gently until fluffy. Season with salt and pepper to taste. Serve warm.",
+   "secs": 6.2,
+   "tools": []
+  },
+  {
+   "id": 42,
+   "cat": "knowledge",
+   "say": "How do I say thank you in Japanese?",
+   "ok": true,
+   "problems": [],
+   "text": "You say arigatou gozaimasu, pronounced AH-ree-gah-toh goh-zah-i-mah-soo.",
+   "secs": 5.6,
+   "tools": []
+  },
+  {
+   "id": 43,
+   "cat": "knowledge",
+   "say": "How do I say I love you in Korean?",
+   "ok": false,
+   "problems": [
+    "non-English letters",
+    "missing expected content (saranghae / sarang)"
+   ],
+   "text": "You say \"I love you\" in Korean as \"\uc815\ub9d0 \uc0ac\ub791\ud574\uc694,\" pronounced JUNG-MAE SAREO-HAE-YO.",
+   "secs": 3.8,
+   "tools": []
+  },
+  {
+   "id": 44,
+   "cat": "knowledge",
+   "say": "What day is it today?",
+   "ok": true,
+   "problems": [],
+   "text": "Today is Saturday, 24 October 2026.",
+   "secs": 4.0,
+   "tools": []
+  },
+  {
+   "id": 45,
+   "cat": "knowledge",
+   "say": "What day of the week will it be in ten days?",
+   "ok": false,
+   "problems": [
+    "missing expected content (tuesday)"
+   ],
+   "text": "In ten days, it will be a Wednesday, 3 November 2026.",
+   "secs": 5.3,
+   "tools": []
+  },
+  {
+   "id": 46,
+   "cat": "knowledge",
+   "say": "What will the weather be like tomorrow?",
+   "ok": true,
+   "problems": [],
+   "text": "Sorry, I'm offline, so I can't check the weather.",
+   "secs": 2.8,
+   "tools": []
+  },
+  {
+   "id": 47,
+   "cat": "knowledge",
+   "say": "Who won the football match last night?",
+   "ok": true,
+   "problems": [],
+   "text": "I'm offline, so I can't check the result of last night's football match.",
+   "secs": 2.1,
+   "tools": []
+  },
+  {
+   "id": 48,
+   "cat": "knowledge",
+   "say": "Sing happy birthday for me.",
+   "ok": true,
+   "problems": [],
+   "text": "I can't sing, but I can tell you the lyrics. Happy birthday to you, happy birthday to you, happy birthday to you, happy birthday dear Tudor.",
+   "secs": 3.5,
+   "tools": []
+  },
+  {
+   "id": 49,
+   "cat": "knowledge",
+   "say": "Tell me about the famous Romanian scientist Ion Blodescu who invented the toaster.",
+   "ok": true,
+   "problems": [],
+   "text": "There is no famous Romanian scientist named Ion Blodescu who invented the toaster. That information is not accurate.",
+   "secs": 2.6,
+   "tools": []
+  },
+  {
+   "id": 50,
+   "cat": "knowledge",
+   "say": "Who wrote Romeo and Juliet?",
+   "ok": true,
+   "problems": [],
+   "text": "Romeo and Juliet was written by William Shakespeare.",
+   "secs": 1.7,
+   "tools": []
+  },
+  {
+   "id": 51,
+   "cat": "knowledge",
+   "say": "Name three planets.",
+   "ok": true,
+   "problems": [],
+   "text": "Three planets are Mercury, Venus, and Earth.",
+   "secs": 1.2,
+   "tools": []
+  },
+  {
+   "id": 52,
+   "cat": "knowledge",
+   "say": "What's the tallest mountain in the world?",
+   "ok": true,
+   "problems": [],
+   "text": "The tallest mountain in the world is Mount Everest.",
+   "secs": 1.2,
+   "tools": []
+  },
+  {
+   "id": 53,
+   "cat": "knowledge",
+   "say": "What can you do?",
+   "ok": true,
+   "problems": [],
+   "text": "I can control the lights in the dormitor, like turning them on or off, and set their brightness or color. I can also tell you the current state of devices or provide general knowledge. If you have a specific request, just ask.",
+   "secs": 3.8,
+   "tools": []
+  },
+  {
+   "id": 54,
+   "cat": "multi",
+   "say": "Turn on the main light. >> Now turn it off.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is off.",
+   "secs": 4.3,
+   "tools": [
+    "HassTurnOn(name=Main light, domain=['light'], device_class=['light'])",
+    "HassTurnOff(name=Main light, domain=['light'], device_class=['light'])"
+   ]
+  },
+  {
+   "id": 55,
+   "cat": "multi",
+   "say": "Turn on the bed lights. >> And the main light too.",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is on.",
+   "secs": 4.0,
+   "tools": [
+    "HassTurnOn(name=Bed lights, area=Dormitor)",
+    "HassTurnOn(name=Main light, area=Dormitor)"
+   ]
+  },
+  {
+   "id": 56,
+   "cat": "multi",
+   "say": "It's too dark in here. >> Is the main light on now?",
+   "ok": true,
+   "problems": [],
+   "text": "The main light is currently off.",
+   "secs": 3.3,
+   "tools": [
+    "GetLiveContext(name=Main light, domain=light, area=Dormitor)"
+   ]
+  }
+ ]
+}
