@@ -27,7 +27,7 @@ Settings → Devices & services → **Ollama → + Add conversation agent** (or 
 
 | Setting | Value | Why |
 |---|---|---|
-| Model | **`qwen3:4b-instruct`** | chapter 02 |
+| Model | **`qwen3:4b-instruct`**, later **`blood-brain`** (step 5) | chapter 02 |
 | Instructions | paste [`prompts/prompt_v6.txt`](../../prompts/prompt_v6.txt) (replace the name with yours) | see below |
 | Control Home Assistant | **off** for now (→ *Assist* once devices exist, chapter 08) | no false "done!" claims |
 | Think before responding | **off** | thinking costs many seconds |
@@ -45,6 +45,26 @@ Assistant's own matcher, without the AI).
 Overview → the **Assist** chat bubble (top right) → ask things. For timings and
 what happened at each stage: Settings → Voice assistants → ⋮ → **Debug**.
 
+### 5. Make it fast: `blood-brain`
+Some Ollama settings can't be set from Home Assistant, so we bake them into our
+own copy of the model with a small recipe file,
+[`tools/blood-brain.Modelfile`](../../tools/blood-brain.Modelfile). It reuses
+the model already downloaded:
+```powershell
+ollama create blood-brain -f tools\blood-brain.Modelfile
+```
+Then pick **`blood-brain`** as the model in the agent (step 2). What it changes:
+
+| Setting | Value | Why |
+|---|---|---|
+| `num_gpu` | `99` (all layers) | Ollama left ~27% of the model on the CPU. All on the GPU: **3.4 s → 1.4 s** per answer, same prompt |
+| `num_predict` | `400` | answer-length cap: once the model wrote 6,000+ words in a loop |
+| `temperature` | `0.2` | same bench score as the default, steadier answers |
+| `num_ctx` | `4096` | the same as the agent's context setting |
+
+It uses ~3.4 GB of the 4 GB card, so quit Ollama before games or other
+GPU-heavy apps. We did this step last (24 Oct), but it works at any point.
+
 ## The prompt, version by version (what each fixed)
 
 | Version | Change | Because we saw… |
@@ -55,7 +75,21 @@ what happened at each stage: Settings → Voice assistants → ⋮ → **Debug**
 | [v4](../../prompts/prompt_v4.txt) | renamed to Blood ("you may hear Blood or Blud") | new name |
 | [v5](../../prompts/prompt_v5.txt) | **the clock line moved from the top to the very end** | each answer took 4–7 s (see the box below) |
 | [v6](../../prompts/prompt_v6.txt) ✅ | English-only rule (no Korean/Chinese/… letters), give opinions, say song lyrics, "never invent people or facts", honest when a date is outside the calendar, **two extra examples** | non-English letters (the voice can't read them), "I'm not sure" for opinions, refusing lyrics, emojis, guessing far-away dates |
-| [v7](../../prompts/prompt_v7_devices.txt) ⬜ | real device rules: act only when clearly asked, ask when unsure, never claim success that didn't happen | for when devices are connected (chapter 08) |
+
+**v6 is the prompt to use until devices are connected.** From v7 on, the
+prompts control devices (chapter 08), and from v8 on every version was tested
+with the device bench (below):
+
+| Version | Change | Bench (56 cases) |
+|---|---|---|
+| [v7](../../prompts/prompt_v7_devices.txt) | real device rules: act only when clearly asked, ask when unsure, never claim success that didn't happen | not benched |
+| [v8](../../prompts/prompt_v8_devices.txt) | "the ONLY way to change a device is to call a tool", tool first and only then "done"; "all the lights" means every light; lists allowed | 50/56, 6.2 s |
+| [v9](../../prompts/prompt_v9_devices.txt) | Home Assistant's real tool names (`intent__HassTurnOn`, …); check live state before answering; the date rule is only about dates | 51/56, 3.4 s (1.4 s all on the GPU) |
+| [v10](../../prompts/prompt_v10_devices.txt) | "too dark" → lights on, "going to sleep" → off; "(in N days)" in the calendar; rankings allowed; off means `HassTurnOff`, not brightness 0 | 106/112 (run twice) |
+| [v11](../../prompts/prompt_v11_devices.txt) | the hint rules written as exact tool calls; "never promise an action without calling its tool" | 78/90 device cases, 10 lies |
+| [v12](../../prompts/prompt_v12_devices.txt) ✅ | one worked example for "It's too dark in here" | 105/112 (run twice); **52/56 with `blood-brain`** |
+
+Every run, with what it shows: [`tests/results/`](../../tests/results/README.md).
 
 The calendar trick (in v2+). Small models can't work out weekdays, so Home
 Assistant writes the next 4 weeks into the prompt:
@@ -88,6 +122,20 @@ What still fails with v6, and why:
 - It still sometimes adds Korean letters next to a pronunciation. That gets fixed
   **in code** (chapter 09 strips non-English characters before speaking).
 
+Once devices were connected, the trick questions weren't enough, so
+[`tests/blood_bench.py`](../../tests/blood_bench.py) took over. It sends 56
+commands and questions to Ollama exactly the way Home Assistant 2026.10.1 does
+(its hidden instructions and its tools), plays the house, and grades the
+answers. Its **lie detector** fails any answer that claims a switch happened
+when no tool call succeeded.
+```powershell
+python tests/blood_bench.py --model blood-brain --prompt prompts/prompt_v12_devices.txt --label my-run
+python tests/blood_bench.py --compare        # table of all saved runs
+```
+What still fails with v12: **hints**. "It's too dark in here" works, but "I can't
+see anything, it's so dark" sometimes gets "I'll turn on the lights for you"
+with no tool call.
+
 **Lessons:** for small models, **examples beat rules** (a rule alone didn't stop
 it guessing Christmas's weekday; one example did). Keep rules short and
 unambiguous. Good device **names** matter more than prompt wording.
@@ -96,7 +144,7 @@ unambiguous. Good device **names** matter more than prompt wording.
 | Problem | Cause | Fix |
 |---|---|---|
 | "Failed to connect" adding Ollama | never pinned down (probably a typo, or right after a reboot) | retried `http://10.0.2.2:11434`, worked |
-| Model 36% on the CPU | Home Assistant's agent used context **8192** | Context window size **4096** → 27% |
+| Model 36% on the CPU | Home Assistant's agent used context **8192** | Context window size **4096** → 27%; later `blood-brain` put it all on the GPU (step 5) |
 | 4–7 s per answer | clock at the top broke the prompt cache | v5: clock at the end |
 | "Prefer handling commands locally" was off | likely reset when the assistant was renamed or recreated | check it after any change to the assistant |
-| Temperature experiments | 0.2 vs the default (0.6–0.7) made no real difference | left at default |
+| Temperature experiments | 0.2 vs the default (0.6–0.7) made no real difference: 106/112 on the bench either way | `blood-brain` uses 0.2 for steadier answers |

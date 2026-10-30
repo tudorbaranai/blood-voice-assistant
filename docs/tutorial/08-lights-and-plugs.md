@@ -165,23 +165,26 @@ accept only one local connection at a time.
 
 ---
 
-## Part 3 · Names, rooms and what Blood may touch 🟡 next
+## Part 3 · Names, rooms and what Blood may touch ✅
 
 Good names matter more than prompt wording for small models:
-1. A clear, unique, sayable **name** for each device: "Bedroom light", "Desk
-   lamp", "Fan plug". Avoid "Light 1".
+1. A short, unique, sayable **name** for each device. Ours are "Main light"
+   (the bulb) and "Bed lights" (the plug). Avoid "Light 1", and avoid vague,
+   descriptive names like "big light": they confused Blood.
 2. An **Area** for each (e.g. Bedroom).
 3. **Aliases** for other names you might say: device → ⚙️ → *Voice assistants →
-   Aliases* (e.g. "big light").
+   Aliases* (e.g. "ceiling light" for the main light).
 4. **Settings → Voice assistants → Expose**: expose **only** your lights and plugs.
    Anything not exposed is invisible to Blood.
 5. Then switch the conversation agent to **Control Home Assistant: Assist** and
-   use the device-aware prompt [`prompts/prompt_v7_devices.txt`](../../prompts/prompt_v7_devices.txt) (chapter 04).
+   use the device-aware prompt [`prompts/prompt_v12_devices.txt`](../../prompts/prompt_v12_devices.txt)
+   with the `blood-brain` model (chapter 04).
 
 Test sentences (check *Voice assistants → ⋮ → Debug* each time):
 | Say | Expect |
 |---|---|
 | "Turn on the bedroom light" | on; fast; *Processed locally = true* |
 | "Is the bedroom light on?" | answers, **changes nothing** |
-| "It's too dark in here" | the AI decides, probably turns on a light |
+| "It's too dark in here" | the AI turns the lights on (4–5 s, it has to think) |
+| "I can't really read with this light" | the AI makes the bulb brighter |
 | "Turn on the garage" (doesn't exist) | says it can't find it, **never claims success** |
