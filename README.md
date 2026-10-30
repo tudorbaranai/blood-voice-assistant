@@ -214,3 +214,9 @@ The project is paused for now, with the core working. Next on the list:
 - **my own interface**, designed for my home instead of Home Assistant's default
   dashboard
 - **automations**, the thing I wanted in the first place
+
+## License
+
+[MIT](LICENSE). [`tests/blood_bench.py`](tests/blood_bench.py) quotes the
+instructions Home Assistant sends to the model, from Home Assistant's source
+code (Apache 2.0).
