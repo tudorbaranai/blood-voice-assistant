@@ -1,6 +1,6 @@
 # Blood
 
-An offline voice assistant that runs on my old gaming laptop and controls my lights.
+An offline voice assistant that runs on my old laptop and controls my lights.
 
 <!-- DEMO: a 20–30 s clip goes here (ask a question, then "I can't really read
      with this light" and the bulb gets brighter). Upload it by dragging the .mp4
