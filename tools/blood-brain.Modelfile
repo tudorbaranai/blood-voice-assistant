@@ -13,7 +13,7 @@ FROM qwen3:4b-instruct
 
 # Put ALL layers on the graphics card. Ollama's own guess left ~27% on the slow CPU.
 # Measured: ~1.4 s per answer instead of 3-6 s. Uses ~3.4 GB of the 4 GB card,
-# so quit Ollama before gaming (tools/gaming-mode.cmd).
+# so quit Ollama (tray icon → Quit) before running games or other GPU-heavy apps.
 PARAMETER num_gpu 99
 
 # Answer-length cap. Without it, the model once wrote 6,000+ words in a loop,

@@ -36,8 +36,6 @@ Home Assistant is the conductor. It already knows how to talk to thousands of
 devices and has a ready-made voice pipeline, so we only build the parts it
 doesn't have: the wake word on Windows, the personality, and later the screen.
 
-An interactive picture of the whole flow: open [`docs/how-blood-works.html`](../how-blood-works.html) in a browser.
-
 ---
 
 ## The hardware

@@ -178,9 +178,7 @@ The prompts use my name (Tudor). Replace it with yours: Blood addresses you by n
 ## What's in this repo
 
 ```
-docs/
-  tutorial/              the step-by-step guide
-  how-blood-works.html   interactive diagram of the pipeline (download and open)
+docs/tutorial/           the step-by-step guide
 prompts/                 every version of Blood's instructions, v2 → v12
 tests/
   blood_bench.py         the brain bench: 56 cases, pretend house, lie detector
@@ -191,10 +189,7 @@ tests/
   results/               every saved bench run
 tools/
   blood-brain.Modelfile  Ollama settings Home Assistant can't set (GPU layers, answer cap)
-  gaming-mode.cmd        stop Blood to free the GPU and RAM for games
-  blood-mode.cmd         start it again and preload the brain
   find_wiz_bulbs.py      find WiZ bulbs on the network
-ROADMAP.md               the working plan
 ```
 
 ## Hardware and cost
