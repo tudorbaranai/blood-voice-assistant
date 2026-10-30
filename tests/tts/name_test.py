@@ -7,7 +7,7 @@ different spelling, or even the exact sounds (phonemes, written between
 spelling; the screen can still show "Tudor".
 
 Each spelling is saved as its own file, saying it in two sentences.
-Listen and tell Claude the number that sounds most like you.
+Listen and pick the number that sounds most like you.
 
 Usage:
     python name_test.py                         uses en_US-ryan-high

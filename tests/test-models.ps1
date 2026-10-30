@@ -5,7 +5,7 @@
 # compare them side by side. It changes no settings: it only asks questions.
 #
 # Run it:
-#   powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Claude Projects\jarvis\tests\test-models.ps1"
+#   powershell -NoProfile -ExecutionPolicy Bypass -File tests\test-models.ps1
 
 param(
     [string]$PromptFile = "$PSScriptRoot\..\prompts\prompt_v2.txt",
@@ -115,7 +115,7 @@ $outDir = Join-Path $PSScriptRoot "results"
 New-Item -ItemType Directory -Force $outDir | Out-Null
 $outFile = Join-Path $outDir ("results-" + (Get-Date -Format "yyyy-MM-dd_HH-mm") + ".md")
 
-$md = @("# Jarvis model test - $(Get-Date -Format 'yyyy-MM-dd HH:mm')", "", "Prompt: $PromptFile", "")
+$md = @("# Jarvis model test - $(Get-Date -Format 'yyyy-MM-dd HH:mm')", "", "Prompt: $(Split-Path -Leaf $PromptFile)", "")
 foreach ($q in ($results | Select-Object -ExpandProperty Question -Unique)) {
     $md += "## $q", "", "| Model / temperature | Seconds | Answer |", "|---|---|---|"
     foreach ($r in ($results | Where-Object Question -eq $q)) {

@@ -5,7 +5,7 @@
 # It changes no settings: it only asks Ollama questions.
 #
 # Run it:
-#   powershell -NoProfile -ExecutionPolicy Bypass -File "D:\Claude Projects\jarvis\tests\compare-brains.ps1"
+#   powershell -NoProfile -ExecutionPolicy Bypass -File tests\compare-brains.ps1
 
 param(
     [string]$PromptFile    = "$PSScriptRoot\..\prompts\prompt_v5.txt",
