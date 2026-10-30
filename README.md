@@ -1,9 +1,6 @@
-# Blood: an offline voice assistant on an old gaming laptop
+# Blood
 
-Blood is a home voice assistant like Alexa or Google Home, built from free,
-open-source parts on one Windows laptop. It answers questions and controls my
-bedroom lights, and it keeps working with the internet unplugged: speech
-recognition, the AI model and the voice all run on the laptop.
+An offline voice assistant that runs on my old gaming laptop and controls my lights.
 
 <!-- DEMO: a 20–30 s clip goes here (ask a question, then "I can't really read
      with this light" and the bulb gets brighter). Upload it by dragging the .mp4
@@ -19,6 +16,10 @@ their homes themselves. Once the lights were in Home Assistant, adding a voice
 and a local AI on top was the obvious next step.
 
 ## How it works
+
+Like Alexa or Google Home, but built from free, open-source parts on one Windows
+laptop. Speech recognition, the AI model and the voice all run on the laptop, so
+it keeps working with the internet unplugged.
 
 ```
 mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speakers
