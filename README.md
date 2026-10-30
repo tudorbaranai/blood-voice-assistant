@@ -186,7 +186,7 @@ tests/
   compare-brains.ps1     early side-by-side test of several models
   stt/                   speech-to-text bench on your own recorded voice
   tts/                   voice audition and name-pronunciation test
-  results/               every saved bench run
+  results/               every saved bench run, summarised in its README
 tools/
   blood-brain.Modelfile  Ollama settings Home Assistant can't set (GPU layers, answer cap)
   find_wiz_bulbs.py      find WiZ bulbs on the network
