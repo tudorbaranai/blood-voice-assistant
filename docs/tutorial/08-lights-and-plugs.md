@@ -172,11 +172,17 @@ Good names matter more than prompt wording for small models:
    (the bulb) and "Bed lights" (the plug). Avoid "Light 1", and avoid vague,
    descriptive names like "big light": they confused Blood.
 2. An **Area** for each (e.g. Bedroom).
-3. **Aliases** for other names you might say: device → ⚙️ → *Voice assistants →
+3. **If a plug powers a lamp, show it as a light.** Home Assistant adds a plug as
+   a *switch*, so "turn on all the lights" or "it's too dark" would skip it. My
+   plug runs the bed lights, so I changed it: Settings → Devices & services →
+   **Entities** → the plug → ⚙️ → **Show as: Light**. It's still a plug; Home
+   Assistant (and Blood) just treat it as a light. The bench models it the same
+   way.
+4. **Aliases** for other names you might say: device → ⚙️ → *Voice assistants →
    Aliases* (e.g. "ceiling light" for the main light).
-4. **Settings → Voice assistants → Expose**: expose **only** your lights and plugs.
+5. **Settings → Voice assistants → Expose**: expose **only** your lights and plugs.
    Anything not exposed is invisible to Blood.
-5. Then switch the conversation agent to **Control Home Assistant: Assist** and
+6. Then switch the conversation agent to **Control Home Assistant: Assist** and
    use the device-aware prompt [`prompts/prompt_v12_devices.txt`](../../prompts/prompt_v12_devices.txt)
    with the `blood-brain` model (chapter 04).
 
