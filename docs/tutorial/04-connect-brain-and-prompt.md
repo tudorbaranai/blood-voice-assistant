@@ -102,7 +102,7 @@ Assistant writes the next 4 weeks into the prompt:
 > ### 💡 The biggest speed win: put anything that changes at the END of the prompt
 > Ollama remembers ("caches") the start of the prompt between questions, but
 > only up to the first character that differs. Our clock line (with minutes)
-> was at the **top**, so every minute the whole ~1,100-word prompt had to be
+> was at the **top**, so every minute the whole prompt had to be
 > re-read from scratch: 4–7 s per answer on our laptop (Ollama's log showed only
 > 76 tokens reused). Moving it to the bottom (v5) keeps the long fixed part
 > cached. The calendar changes once a day, so it can stay higher up.
@@ -125,8 +125,9 @@ What still fails with v6, and why:
 
 Once devices were connected, the trick questions weren't enough, so
 [`tests/blood_bench.py`](../../tests/blood_bench.py) took over. It sends 56
-commands and questions to Ollama exactly the way Home Assistant 2026.10.1 does
-(its hidden instructions and its tools), plays the house, and grades the
+commands and questions to Ollama the way Home Assistant 2026.10.1 does, copied
+as closely as I could (its hidden instructions and its light-control tools),
+plays the house, and grades the
 answers. Its **lie detector** fails any answer that claims a switch happened
 when no tool call succeeded.
 ```powershell

@@ -12,7 +12,7 @@
 FROM qwen3:4b-instruct
 
 # Put ALL layers on the graphics card. Ollama's own guess left ~27% on the slow CPU.
-# Measured: ~1.4 s per answer instead of 3-6 s. Uses ~3.4 GB of the 4 GB card,
+# Measured on the bench: 1.4 s per answer instead of 3.4 s. Uses ~3.4 GB of the 4 GB card,
 # so quit Ollama (tray icon → Quit) before running games or other GPU-heavy apps.
 PARAMETER num_gpu 99
 
@@ -23,5 +23,5 @@ PARAMETER num_predict 400
 # Less random word choice (default 0.7). Same test score, steadier behaviour.
 PARAMETER temperature 0.2
 
-# Same memory size Home Assistant asks for.
+# Same as the agent's Context window size in Home Assistant (chapter 04).
 PARAMETER num_ctx 4096

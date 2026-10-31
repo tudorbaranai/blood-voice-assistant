@@ -45,16 +45,18 @@ when it can't check something live, like the weather.
 
 Plain commands ("turn off the main light") are handled instantly by Home
 Assistant's own matcher. Anything that needs understanding goes to the AI: when
-I say *"I can't really read with this light"*, it thinks for 4–5 seconds and
-turns the bulb up.
+I say *"I can't really read with this light"*, the bulb gets brighter after 4–5
+seconds. The bench measures about 2 s of that for the brain deciding and calling
+the switch; the rest is speech-to-text, Home Assistant and the voice.
 
 ## How well it works
 
 All numbers are measured on the laptop below, with the scripts in [`tests/`](tests/).
 
 **Brain.** [`tests/blood_bench.py`](tests/blood_bench.py) sends 56 commands and
-questions to the brain exactly the way Home Assistant 2026.10.1 does (same
-hidden instructions, same tools), runs the tool calls against a pretend house,
+questions to the brain the way Home Assistant 2026.10.1 does, copied as closely
+as I could (its hidden instructions and its light-control tools), runs the tool
+calls against a pretend house,
 and grades the answers. Its most important check is a lie detector: if Blood
 says "the light is on" but no switch was actually called, the test fails.
 
@@ -78,8 +80,8 @@ like "I can't see anything, it's so dark", it replies "I'll turn on the lights
 for you" without calling the switch. Those three answers are the lies the bench
 catches.
 
-**Ear.** On the same 15 recorded sentences, Parakeet took about 0.7 s each with
-9% word errors. Whisper small made fewer mistakes (4%) but took about 4 s, too
+**Ear.** On the same 15 recorded sentences (recorded before I tuned the mic),
+Parakeet took about 0.7 s each with 9% word errors. Whisper small made fewer mistakes (4%) but took about 4 s, too
 slow for a conversation. [Results](tests/stt/results/summary.csv).
 
 **Voice.** I auditioned 14 Piper voices. Some sounded very polished, but speed
@@ -96,14 +98,16 @@ control that more than anything else. I rewrote it twelve times
 ([every version](prompts/)). A single rewrite (v5 → v6) took my ten trick
 questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
 
-- **Put the names in.** My name, Blood's name (and how it gets misheard:
-  "Blood" or "Blud"), and the exact name of every device and room.
+- **Put the names in.** My name and Blood's name (and how it gets misheard:
+  "Blood" or "Blud") are written in the prompt. Home Assistant adds the list of
+  devices and rooms by itself, so the names you give them there matter as much.
 - **Give devices short, unique names.** Mine are "Main light" and "Bed lights".
   Vague, descriptive names like "big light" confused it; a plain name that
   sounds like nothing else works best.
-- **Keep it medium-length.** Mine stayed between 35 and 67 lines. Every line
-  takes memory on a 4 GB card, and a longer prompt made it hallucinate more,
-  not less.
+- **Longer doesn't automatically mean better.** Mine grew from 35 to 67 lines,
+  and the longest, v12, scored best, but only because each added line fixed a
+  failure the bench had caught. Every line also costs memory and time on a
+  4 GB card, so a line that doesn't fix something measurable doesn't go in.
 - **It copies the examples.** An early version answered "The ceiling light is
   on." straight from an example, without touching anything. Examples now come
   with "these only show the style, never repeat them word for word".
@@ -130,9 +134,10 @@ questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
   smarter but took 11–235 s. `llama3.2:3b` just wasn't my style.
   `qwen3:4b-instruct` was the middle: not brilliant, honest, under 2 s.
   ([chapter 02](docs/tutorial/02-brain-ollama.md))
-- **Tuning the mic beat switching engines.** Mic volume to 100, Realtek
-  "effects" off and boost at 0 dB took word errors on my test sentences from 14%
-  to near zero, a bigger gain than any model change.
+- **Tuning the mic beat switching engines.** Mic volume to 100 and the Realtek
+  "effects" off took word errors on five test sentences from 14% to 3%, a bigger
+  gain than any engine change. With the boost lowered to 0 dB, a short re-test
+  got every word right.
   ([chapter 05](docs/tutorial/05-ear-speech-to-text.md))
 
 ## How it came together

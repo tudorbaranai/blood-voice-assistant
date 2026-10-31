@@ -57,7 +57,7 @@ damage speech for recognition. What worked for us (Realtek audio):
 | volume 60, effects on (Windows default) | 14.3% |
 | volume 100, effects on | 5.7% |
 | volume 100, **effects off**, boost +10 dB | 2.9%, but near speech clipped |
-| **volume 100, effects off, boost 0 dB** ✅ | 0% on the re-test; near voice ≈ −22 dB, far ≈ −31 dB |
+| **volume 100, effects off, boost 0 dB** ✅ | 0% on a 2-sentence re-test; near voice ≈ −22 dB, far ≈ −31 dB |
 
 ## Check it worked
 - Assist chat bubble → 🎤 → speak (the browser allows the mic on `127.0.0.1`).

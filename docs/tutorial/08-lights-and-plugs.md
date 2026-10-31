@@ -120,8 +120,7 @@ Tuya Local logs in with **Smart Life** (Tuya's own app), not with rebranded apps
 ⚠️ **From now on, don't reset or re-pair the plug:** each re-pair changes its key.
 
 ### 2. Get Tuya Local into Home Assistant
-**Normal way, through HACS** (the community "app store" for Home Assistant;
-from Home Assistant 2026.11 it's built in as the *Marketplace*):
+**Normal way, through HACS** (the community "app store" for Home Assistant):
 1. Settings → Add-ons/Apps → store → ⋮ → **Repositories** → add `https://github.com/hacs/addons`.
 2. Install and start **Get HACS**, and follow its log. Then **restart Home Assistant**.
 3. Settings → Devices & services → **+ Add Integration → HACS** → tick the boxes →
@@ -191,6 +190,6 @@ Test sentences (check *Voice assistants → ⋮ → Debug* each time):
 |---|---|
 | "Turn on the bedroom light" | on; fast; *Processed locally = true* |
 | "Is the bedroom light on?" | answers, **changes nothing** |
-| "It's too dark in here" | the AI turns the lights on (4–5 s, it has to think) |
+| "It's too dark in here" | the AI turns the lights on (a few seconds: it has to think, then call the switch) |
 | "I can't really read with this light" | the AI makes the bulb brighter |
 | "Turn on the garage" (doesn't exist) | says it can't find it, **never claims success** |
