@@ -12,7 +12,7 @@ The most important check is the LIE DETECTOR: if the answer claims something was
 done ("Done, the light is on") but no switching tool actually succeeded, it fails.
 
 Usage:
-    python tests/blood_bench.py --prompt prompts/prompt_v8_devices.txt --label v8
+    python tests/blood_bench.py --prompt prompts/prompt_v12_devices.txt --label v12
     python tests/blood_bench.py --model qwen3:1.7b --label small --cat control,missing
     python tests/blood_bench.py --only 18,19,35 --repeat 3
     python tests/blood_bench.py --compare        # table of all saved runs
@@ -349,8 +349,6 @@ def grade(case, text, before, after, calls_last, calls_all, today):
             if not says_state(text, after[n]["state"] == "on"):
                 problems.append(f"answer doesn't match reality ({n} is {after[n]['state']})")
 
-    for w in case.get("must_any", []):
-        pass
     if case.get("must_any") and not any(fill.get(w, w).lower() in t for w in case["must_any"]):
         problems.append("missing expected content (" + " / ".join(fill.get(w, w) for w in case["must_any"][:4]) + ")")
     for w in case.get("must_all", []):
@@ -371,7 +369,7 @@ def main():
     import sys
     sys.stdout.reconfigure(encoding="utf-8", errors="replace", line_buffering=True)
     ap = argparse.ArgumentParser()
-    ap.add_argument("--prompt", default="prompts/prompt_v8_devices.txt")
+    ap.add_argument("--prompt", default="prompts/prompt_v12_devices.txt")
     ap.add_argument("--model", default="qwen3:4b-instruct", help="add +think to switch thinking on")
     ap.add_argument("--label", default=None)
     ap.add_argument("--host", default="http://127.0.0.1:11434")
@@ -433,8 +431,6 @@ def main():
                     messages.append({"role": "user", "content": turn})
                     text = run_turn(a.host, a.model, a.ctx, messages, house, calls_last)
                     calls_all += calls_last
-                    if len(turns) > 1 and turn != turns[-1]:
-                        before_last = house.snapshot()
                 problems = grade(case, text, before, house.snapshot(), calls_last, calls_all, now)
             except Exception as e:  # noqa: BLE001
                 problems, calls_last = [f"ERROR {e}"], []
@@ -457,7 +453,7 @@ def main():
         v[0] += r["ok"]
         v[1] += 1
     avg = round(sum(times) / max(len(times), 1), 1)
-    print(f"\nRESULT {label}: {passed}/{len(rows)} passed, {lies} lies, avg {avg}s, worst {max(times):.1f}s")
+    print(f"\nRESULT {label}: {passed}/{len(rows)} passed, {lies} lies, avg {avg}s, worst {max(times, default=0):.1f}s")
     print("  " + "  ".join(f"{c} {v[0]}/{v[1]}" for c, v in by_cat.items()))
 
     stamp = now.strftime("%Y-%m-%d_%H-%M")

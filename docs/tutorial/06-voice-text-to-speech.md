@@ -51,7 +51,7 @@ What we measured (first sound / speed vs real time):
 | `en_US-ryan-high`, `en_US-lessac-high`, `en_GB-cori-high` | 0.8–0.9 s | 2.3–2.4× |
 
 We auditioned 14 voices and finally picked **`en_US-libritts_r-medium`**, a
-multi-speaker voice that sounded the most natural to us. Taste matters here, so try a few.
+multi-speaker voice (default speaker) that sounded the most natural and cheerful to us. Taste matters here, so try a few.
 
 ## Making it say your name right
 Voices read names with English rules, so names from other languages often come

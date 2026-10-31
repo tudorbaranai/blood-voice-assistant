@@ -11,8 +11,8 @@ answers through your speakers. Today you talk to it through Home Assistant's
 Assist, in the browser. The goal is a wake word: you say *"Hey Blood"*, it
 answers *"Yes?"*, no browser needed *(planned, chapter 09)*.
 
-> The project started under the name "Jarvis", which is why the folder and some
-> files still use that name.
+> The project started under the name "Jarvis", which is why the first test
+> scripts, the speech-to-text test sentences and some old results still use it.
 
 ---
 
@@ -96,9 +96,9 @@ The laptop is still usable for normal things while Blood runs.
 | VM vs. Docker | **VM with Home Assistant OS** | **Docker on Windows**: no add-on store, Bluetooth and network discovery don't reach the container. |
 | Which VM software | **VirtualBox** | **Hyper-V**: built into Windows, but [Home Assistant says it has no USB support](https://www.home-assistant.io/installation/windows/), so the laptop's Bluetooth couldn't be passed in. |
 | VM network | **NAT + port forwarding** | **Bridged over Wi-Fi**: the default in Home Assistant's guide, but it was unreliable on our Realtek Wi-Fi (setup got stuck). |
-| Model | **`qwen3:4b-instruct`** | **`qwen3:1.7b`**: fastest but made up facts. **`qwen3:4b` / `-thinking`**: smartest, but 10–200 s per answer, far too slow for voice. |
-| Ear | **Parakeet** | **Whisper small**: slightly more accurate but ~4 s per sentence vs. ~0.7 s. |
-| Voice | **Piper** `en_US-libritts_r-medium` | 14 voices auditioned; this one sounded most natural to us. |
+| Model | **`qwen3:4b-instruct`** | **`qwen3:1.7b`**: fastest but made up facts. **`qwen3:4b` / `-thinking`**: smartest, but 11–235 s per answer, far too slow for voice. |
+| Ear | **Parakeet** | **Whisper small**: about half the word errors, but ~4 s per sentence vs. ~0.7 s. |
+| Voice | **Piper** `en_US-libritts_r-medium` | 14 voices auditioned; this one sounded the most natural and cheerful to us. |
 
 Each chapter explains its own decision in more detail.
 

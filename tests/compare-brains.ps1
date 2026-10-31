@@ -88,6 +88,7 @@ for ($t = 0; $t -lt $tests.Count; $t++) {
     $cells = foreach ($brain in $Brains) { $answers["$brain|$t"] -replace '\|', '/' }
     $md += "| $($t + 1) | $($tests[$t].Turns -join ' >> ') | $($tests[$t].Ideal) | " + ($cells -join " | ") + " |"
 }
-$md += "", "| Total time | " + (($Brains | ForEach-Object { "$_ : $([math]::Round($totals[$_],1)) s" }) -join " / ") + " |"
+$md += ""
+$md += "| Total time | " + (($Brains | ForEach-Object { "$_ : $([math]::Round($totals[$_],1)) s" }) -join " / ") + " |"
 $md | Set-Content -Encoding UTF8 $outFile
 Write-Host "`nSaved report: $outFile"

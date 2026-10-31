@@ -19,7 +19,7 @@ tests/stt/mic-*/
 *.wav
 *.mp3
 
-# --- Models (downloaded or trained separately, see the tutorial) ---
+# --- Models (e.g. the planned wake-word model, chapter 09) ---
 models/
 
 # --- Editor / OS clutter ---

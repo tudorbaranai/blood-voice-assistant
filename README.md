@@ -224,7 +224,9 @@ prompts/                 every version of Blood's instructions, v2 → v12
 tests/
   blood_bench.py         the brain bench: 56 cases, pretend house, lie detector
   blood_bench_cases.json the test sentences and the pretend devices
-  compare-brains.ps1     early side-by-side test of several models
+  compare-brains.ps1     early side-by-side test of several models on trick questions
+  questions-limits.txt   the trick questions
+  test-models.ps1        the very first model and temperature test
   stt/                   speech-to-text bench on your own recorded voice
   tts/                   voice audition and name-pronunciation test
   results/               every saved bench run, summarised in its README

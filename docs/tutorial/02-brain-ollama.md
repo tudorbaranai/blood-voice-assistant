@@ -20,7 +20,7 @@ It starts automatically with Windows (a llama icon in the tray) and updates itse
 > options for coding tools. You don't need any of them, and you don't need an account.
 
 ### 2. Squeeze more into the graphics memory
-A 4 GB card is tight. These two settings shrink the model's working memory
+A 4 GB card is tight. These settings shrink the model's working memory
 with no noticeable quality loss. Run in PowerShell, once:
 ```powershell
 setx OLLAMA_FLASH_ATTENTION 1

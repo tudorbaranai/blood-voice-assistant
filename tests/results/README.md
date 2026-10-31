@@ -2,7 +2,8 @@
 
 Every saved run of the brain benches. Open any `.md` file for the full answers;
 the `.json` files hold the same data for `python tests/blood_bench.py --compare`.
-All runs: `qwen3:4b-instruct` on a GTX 1650 Ti (4 GB), 8 GB RAM.
+Hardware: GTX 1650 Ti (4 GB), 8 GB RAM. The brain bench runs all use `qwen3:4b-instruct`;
+the earlier benches compare several models.
 
 ## Brain bench: `blood_bench.py` (24 Oct 2026)
 

@@ -6,7 +6,7 @@ Home Assistant turns your spoken sentence into text, accurately and in under a s
 ## Why Parakeet (through the "Whisper" add-on)
 Home Assistant's **Whisper** add-on now contains several engines. For English,
 `model: auto` uses **NVIDIA Parakeet**, which in our tests was **6× faster** than
-Whisper "small" with only slightly more errors. We measured it ourselves:
+Whisper "small", with about twice the word errors (still few). We measured it ourselves:
 
 | Engine (add-on settings) | Word errors | Perfect sentences | Avg. wait |
 |---|---|---|---|
