@@ -41,4 +41,4 @@
   for graphics memory, so test first.
 - **Free up 2.5 GB of RAM:** move Home Assistant to a spare old laptop or mini-PC
   with a backup/restore.
-- **Re-test brains** when new small models come out (`tests/compare-brains.ps1`).
+- **Re-test brains** when new small models come out: `python tests\blood_bench.py --model <new model>` (chapter 04).

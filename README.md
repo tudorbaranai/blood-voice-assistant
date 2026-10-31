@@ -150,8 +150,23 @@ hardware are mine.
 
 ## Build your own
 
+> **Before you start**
+> - **A Windows 10/11 laptop that can stay on**, ideally with an NVIDIA card
+>   (4 GB or more). The steps use PowerShell and VirtualBox, so they're
+>   Windows-only as written.
+> - **About 40 GB of free disk**: ~32 GB for the Home Assistant VM, ~3.3 GB for
+>   the AI model.
+> - **To download:** this repo (*Code → Download ZIP*, or `git clone`),
+>   [Ollama](https://ollama.com/download), [VirtualBox](https://www.virtualbox.org/wiki/Downloads),
+>   and [Python 3.9+](https://www.python.org/downloads/) for the benches.
+> - **Accounts, only during setup:** the bulb's and plug's phone apps (WiZ,
+>   Smart Life) to put them on your Wi-Fi, the same Smart Life login once more
+>   so Home Assistant can fetch the plug's local key, and a GitHub login for
+>   HACS, the community store Tuya Local comes from. After setup, Blood
+>   doesn't use any of them.
+
 The tutorial walks through everything in order. Each chapter follows the same
-shape: *Goal → Why → Steps → Check it worked → What went wrong for us.*
+shape: *Goal → Why → Steps → Check it worked → What went wrong for me.*
 
 0. [Overview and the big decisions](docs/tutorial/00-overview.md)
 1. [Prepare the laptop for 24/7](docs/tutorial/01-laptop-24-7.md)
@@ -166,11 +181,14 @@ shape: *Goal → Why → Steps → Check it worked → What went wrong for us.*
 10. [The screen](docs/tutorial/10-screen.md) *(planned)*
 11. [Maintenance and troubleshooting](docs/tutorial/11-maintenance-and-troubleshooting.md)
 
-To run the brain bench against your own Ollama (Python 3, no extra packages):
+To run the brain bench against your own Ollama (Python 3.9+, no extra
+packages), from the repo folder:
 
 ```powershell
-python tests/blood_bench.py --model blood-brain --prompt prompts/prompt_v12_devices.txt --label my-run
-python tests/blood_bench.py --compare
+ollama pull qwen3:4b-instruct
+ollama create blood-brain -f tools\blood-brain.Modelfile
+python tests\blood_bench.py --model blood-brain --prompt prompts\prompt_v12_devices.txt --label my-run
+python tests\blood_bench.py --compare
 ```
 
 The prompts use my name (Tudor). Replace it with yours: Blood addresses you by name.
@@ -198,8 +216,8 @@ ASUS TUF Gaming A15: Ryzen 5 4600H, **8 GB RAM**, GTX 1650 Ti with **4 GB**,
 Windows 11. Built-in mic, speakers on the 3.5 mm jack. Any similar laptop with
 an NVIDIA card should work; without one, the brain runs on the CPU and is slower.
 
-**Cost: €0.** Everything is free software on hardware I already had. The only
-accounts needed are the bulb and plug apps, once, for their first Wi-Fi setup.
+**Cost: €0.** Everything is free software on hardware I already had. The
+accounts it needs are only for setup (see *Before you start*).
 
 "Offline" means no internet. The Wi-Fi bulb and plug still reach the laptop
 through the router, so the router has to stay on.

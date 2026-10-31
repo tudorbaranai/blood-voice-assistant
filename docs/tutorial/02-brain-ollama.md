@@ -59,10 +59,15 @@ should take about 1–3 s.
 We compared them with our own bench: [`tests/compare-brains.ps1`](../../tests/compare-brains.ps1)
 asks every model the same tricky questions ([`tests/questions-limits.txt`](../../tests/questions-limits.txt))
 with the same instructions and writes a side-by-side table to `tests/results/`.
+By default it compares the three Qwen models above, so download the thinking one
+first (2.5 GB), or remove it from the `$Brains` list at the top of the script:
 ```powershell
+ollama pull qwen3:4b-thinking
 powershell -NoProfile -ExecutionPolicy Bypass -File tests\compare-brains.ps1
 ```
-Re-run it whenever a new small model comes out.
+These trick questions were written before devices were connected. To test a new
+model with devices, use the device bench from chapter 04:
+`python tests\blood_bench.py --model <new model>`.
 
 ## What went wrong for us
 | Problem | Cause | Fix |
