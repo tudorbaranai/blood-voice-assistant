@@ -91,5 +91,5 @@ Recordings are 16 kHz mono WAV, the format the engine expects. Results go to
 | Assistant showed Speech-to-text **"None"** | the add-on was installed, but the **Wyoming** integration wasn't added in Home Assistant | add Wyoming Protocol (step 2) |
 | Bench couldn't reach the add-on | the add-on port isn't exposed by default | add-on Network `10300` + the NAT rule |
 | First scores looked worse than they were | "kilometres" vs "kilometers" and "uh" counted as errors | the scoring now ignores spelling variants and fillers |
-| Parakeet heard our name wrong | uncommon names are hard for any engine | the wake-word program and the prompt don't depend on hearing the name |
+| Parakeet heard our name wrong | uncommon names are hard for any engine | the prompt doesn't need the name heard right, and the planned wake word (chapter 09) will listen for "Hey Blood" on its own |
 | `python` not found right after installing it | the PowerShell window was opened before the install | open a new window |

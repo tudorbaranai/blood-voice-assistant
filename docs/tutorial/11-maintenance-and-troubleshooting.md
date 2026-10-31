@@ -29,7 +29,8 @@
   the top made every answer re-read the whole prompt, which cost 4–7 s
   (chapter 04).
 - **Small models sometimes write non-English letters** even when told not to.
-  The voice program cleans the text before speaking (chapters 04 and 09).
+  The prompt's English-only rule catches most of it; the planned voice program
+  will clean the text before speaking (chapter 09).
 
 ## Ideas for later
 - **Weather without sending your voice anywhere:** Home Assistant's free *Met.no*

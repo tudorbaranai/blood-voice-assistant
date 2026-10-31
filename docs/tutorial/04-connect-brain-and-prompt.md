@@ -119,8 +119,9 @@ Assistant writes the next 4 weeks into the prompt:
 What still fails with v6, and why:
 - The bat-and-ball puzzle and counting the R's in "strawberry" are limits of a
   4-billion-parameter model.
-- It still sometimes adds Korean letters next to a pronunciation. That gets fixed
-  **in code** (chapter 09 strips non-English characters before speaking).
+- It still sometimes adds Korean letters next to a pronunciation. The plan is to fix
+  that **in code**: the voice program (chapter 09, planned) will strip non-English
+  characters before speaking.
 
 Once devices were connected, the trick questions weren't enough, so
 [`tests/blood_bench.py`](../../tests/blood_bench.py) took over. It sends 56

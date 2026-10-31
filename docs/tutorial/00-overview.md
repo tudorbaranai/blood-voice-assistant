@@ -6,8 +6,10 @@
 - it runs **fully offline**: your voice, the "brain" and the answers never leave your home,
 - every piece is open source and replaceable.
 
-You say *"Hey Blood"*, it answers *"Yes?"*, you ask a question or give a command
-("turn off the bedroom light"), and it answers through your speakers.
+You ask a question or give a command ("turn off the bedroom light") and it
+answers through your speakers. Today you talk to it through Home Assistant's
+Assist, in the browser. The goal is a wake word: you say *"Hey Blood"*, it
+answers *"Yes?"*, no browser needed *(planned, chapter 09)*.
 
 > The project started under the name "Jarvis", which is why the folder and some
 > files still use that name.
@@ -72,7 +74,7 @@ The laptop is still usable for normal things while Blood runs.
  └────────────────────────────────────────────────────────┘
 ```
 
-- The wake word, ear, brain and voice all run on the laptop. ✅ No internet.
+- The ear, brain and voice (and later the wake word) all run on the laptop. ✅ No internet.
 - **Wi-Fi** bulbs and plugs talk to the laptop **through your router**, like
   letters through a post office. The router must be powered on. The internet
   connection can be unplugged and everything keeps working.
