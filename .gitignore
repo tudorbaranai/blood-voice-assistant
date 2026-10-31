@@ -19,7 +19,7 @@ tests/stt/mic-*/
 *.wav
 *.mp3
 
-# --- Models (downloaded or trained separately, see the tutorial) ---
+# --- Models (e.g. the planned wake-word model, chapter 09) ---
 models/
 
 # --- Editor / OS clutter ---
@@ -28,3 +28,9 @@ models/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# --- Private: my own notes and convenience scripts, kept on my laptop only ---
+ROADMAP.md
+docs/how-blood-works.html
+tools/gaming-mode.*
+tools/blood-mode.*

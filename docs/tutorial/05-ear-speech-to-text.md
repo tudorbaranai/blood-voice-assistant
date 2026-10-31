@@ -5,8 +5,8 @@ Home Assistant turns your spoken sentence into text, accurately and in under a s
 
 ## Why Parakeet (through the "Whisper" add-on)
 Home Assistant's **Whisper** add-on now contains several engines. For English,
-`model: auto` uses **NVIDIA Parakeet**, which in our tests was **6× faster** than
-Whisper "small" with only slightly more errors. We measured it ourselves:
+`model: auto` uses **NVIDIA Parakeet**, which in my tests was **6× faster** than
+Whisper "small", with about twice the word errors (still few). I measured it myself:
 
 | Engine (add-on settings) | Word errors | Perfect sentences | Avg. wait |
 |---|---|---|---|
@@ -46,18 +46,18 @@ After the model has downloaded once: add-on **Configuration → `local_files_onl
 
 ### 5. Tune the microphone (the biggest improvement)
 Laptop mics often come with "effects" (noise suppression, beam-forming) that
-damage speech for recognition. What worked for us (Realtek audio):
+damage speech for recognition. What worked for me (Realtek audio):
 1. Windows: Settings → System → Sound → **Input** → your mic → **Volume 100**.
 2. **Realtek Audio Console** → Recording Devices → Microphone Array →
    **Microphone Effects: All Off** (Acoustic Echo Cancellation off).
-3. **Microphone Boost: 0 dB**. With +10 dB, our voice **clipped** (distorted) when close.
+3. **Microphone Boost: 0 dB**. With +10 dB, my voice **clipped** (distorted) when close.
 
 | Mic settings | Word errors (5 sentences) |
 |---|---|
 | volume 60, effects on (Windows default) | 14.3% |
 | volume 100, effects on | 5.7% |
 | volume 100, **effects off**, boost +10 dB | 2.9%, but near speech clipped |
-| **volume 100, effects off, boost 0 dB** ✅ | 0% on the re-test; near voice ≈ −22 dB, far ≈ −31 dB |
+| **volume 100, effects off, boost 0 dB** ✅ | 0% on a 2-sentence re-test; near voice ≈ −22 dB, far ≈ −31 dB |
 
 ## Check it worked
 - Assist chat bubble → 🎤 → speak (the browser allows the mic on `127.0.0.1`).
@@ -85,11 +85,11 @@ damage speech for recognition. What worked for us (Realtek audio):
 Recordings are 16 kHz mono WAV, the format the engine expects. Results go to
 `tests/stt/results/`. Keep your recordings private: they're your voice.
 
-## What went wrong for us
+## What went wrong for me
 | Problem | Cause | Fix |
 |---|---|---|
 | Assistant showed Speech-to-text **"None"** | the add-on was installed, but the **Wyoming** integration wasn't added in Home Assistant | add Wyoming Protocol (step 2) |
 | Bench couldn't reach the add-on | the add-on port isn't exposed by default | add-on Network `10300` + the NAT rule |
 | First scores looked worse than they were | "kilometres" vs "kilometers" and "uh" counted as errors | the scoring now ignores spelling variants and fillers |
-| Parakeet heard our name wrong | uncommon names are hard for any engine | the wake-word program and the prompt don't depend on hearing the name |
+| Parakeet heard my name wrong | uncommon names are hard for any engine | the prompt doesn't need the name heard right, and the planned wake word (chapter 09) will listen for "Hey Blood" on its own |
 | `python` not found right after installing it | the PowerShell window was opened before the install | open a new window |

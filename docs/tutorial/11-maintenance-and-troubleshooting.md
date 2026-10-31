@@ -18,7 +18,7 @@
 5. **A device stopped responding?** Check it still has the same IP (router's
    client list), and that the router is on (chapter 00: Wi-Fi devices need the router).
 
-## Things we learned the hard way (collected from every chapter)
+## Things I learned the hard way (collected from every chapter)
 - **Bluetooth passthrough "Captured" but nothing arrives** → Bluetooth was off in
   Windows. Turn it on (chapter 07).
 - **Home Assistant in this VM listens on port 80 inside the VM**, not 8123. The
@@ -29,7 +29,8 @@
   the top made every answer re-read the whole prompt, which cost 4–7 s
   (chapter 04).
 - **Small models sometimes write non-English letters** even when told not to.
-  The voice program cleans the text before speaking (chapters 04 and 09).
+  The prompt's English-only rule catches most of it; the planned voice program
+  will clean the text before speaking (chapter 09).
 
 ## Ideas for later
 - **Weather without sending your voice anywhere:** Home Assistant's free *Met.no*
@@ -40,4 +41,4 @@
   for graphics memory, so test first.
 - **Free up 2.5 GB of RAM:** move Home Assistant to a spare old laptop or mini-PC
   with a backup/restore.
-- **Re-test brains** when new small models come out (`tests/compare-brains.ps1`).
+- **Re-test brains** when new small models come out: `python tests\blood_bench.py --model <new model>` (chapter 04).

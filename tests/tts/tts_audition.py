@@ -1,7 +1,7 @@
-"""Voice audition for Jarvis.
+"""Voice audition for Blood.
 
 Asks the Piper text-to-speech server (via the Wyoming protocol) to speak the
-same Jarvis sentences in several voices. For each voice it saves one WAV file
+same Blood sentences in several voices. For each voice it saves one WAV file
 you can listen to, and measures how fast the voice is:
 
   first sound   time until the first piece of audio comes back
