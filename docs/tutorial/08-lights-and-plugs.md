@@ -19,7 +19,7 @@ have**. In the brand's app or in Google Home → tap the device → ⚙️ / dev
 | Matter devices | Wi-Fi/Thread | **Matter** | ✅ (but see the NAT note) |
 
 ### ⚠️ The NAT note (affects every Wi-Fi device)
-Our VM uses **NAT** networking (chapter 03). From inside the VM, Home Assistant
+My VM uses **NAT** networking (chapter 03). From inside the VM, Home Assistant
 **can reach** devices on your home network, but it **can't discover** them
 automatically. So:
 - add Wi-Fi devices **by IP address**,
@@ -48,7 +48,7 @@ It lists every WiZ bulb that answers, with its address, firmware and Wi-Fi signa
 > your own router behind it), or a "guest" Wi-Fi. Devices on another router's
 > Wi-Fi, or on a guest network, are often **walled off**: the laptop can't
 > reach them at all, and Home Assistant says *"cannot connect"*.
-> **What helped in our case:** move the bulb onto the **same router as the
+> **What helped in my case:** move the bulb onto the **same router as the
 > laptop**, on its **2.4 GHz** Wi-Fi (smart bulbs and plugs only use 2.4 GHz):
 > 1. Connect your **phone** to that 2.4 GHz Wi-Fi.
 > 2. WiZ app → bulb → ⚙️ → **Remove**.
@@ -76,14 +76,14 @@ client list, where WiZ bulbs show up as `wiz_xxxxxx`) → its current IP → sav
 ### Check it worked
 Open the light in Home Assistant: on/off, brightness and colour all react
 within a second.
-Expected in our NAT setup: if you change the bulb from the WiZ app or Google
+Expected in my NAT setup: if you change the bulb from the WiZ app or Google
 Home, Home Assistant may take a few seconds to notice.
 
-### What went wrong for us
+### What went wrong for me
 | Problem | Cause | Fix |
 |---|---|---|
-| We planned for Hue Bluetooth bulbs, but the light was **WiZ** | never checked the brand | always check the device info first (table above) |
-| Network scan found no bulb; the WiZ app showed it on the **other** router's network | the bulb had been set up on the internet provider's Wi-Fi, which walls devices off | moved it to our router's 2.4 GHz Wi-Fi (box above) |
+| I planned for Hue Bluetooth bulbs, but the light was **WiZ** | never checked the brand | always check the device info first (table above) |
+| Network scan found no bulb; the WiZ app showed it on the **other** router's network | the bulb had been set up on the internet provider's Wi-Fi, which walls devices off | moved it to my router's 2.4 GHz Wi-Fi (box above) |
 | After a first, unfinished re-pairing, the bulb showed up for a moment, then vanished after a router restart | setup didn't finish, so the bulb fell back to its old saved network | remove it in the WiZ app and pair it again properly, with the phone on the 2.4 GHz network |
 | *"Cannot connect"* when adding the WiZ integration | the bulb wasn't on a reachable network at that moment | fix the network first, then add by IP |
 
@@ -97,7 +97,7 @@ can be controlled two ways:
   through Tuya's internet servers. ❌ Not offline.
 - **Local** ([*Tuya Local*](https://github.com/make-all/tuya-local), a community
   integration): Home Assistant talks to the plug directly, using a secret
-  **local key** fetched once. ✅ Offline. **Our choice.**
+  **local key** fetched once. ✅ Offline. **My choice.**
 
 *Why a key?* Tuya plugs encrypt their local messages, so nobody else on your
 Wi-Fi can switch them. Tuya Local borrows the key once from your Smart Life
@@ -132,7 +132,7 @@ Tuya Local logs in with **Smart Life** (Tuya's own app), not with rebranded apps
 > `Request exception for 'https://github.com/login/device/code' with - 400, message='Got more than 8190 bytes when reading'`.
 > GitHub's reply carried a ~9 KB security header, bigger than the 8 KB limit of
 > the library HACS uses. That's a GitHub-side problem, nothing in your setup.
-> **What helped in our case: install Tuya Local by hand**, the same files from the
+> **What helped in my case: install Tuya Local by hand**, the same files from the
 > same place. In the VM console, type `login` at the `ha >` prompt, then (use
 > the [latest release](https://github.com/make-all/tuya-local/releases) number instead of `2026.10.0`):
 > ```sh
@@ -156,7 +156,7 @@ Switch it from Home Assistant; power readings (watts) appear.
 If it misbehaves, **close the Smart Life app on your phone**: many Tuya plugs
 accept only one local connection at a time.
 
-### What went wrong for us
+### What went wrong for me
 | Problem | Cause | Fix |
 |---|---|---|
 | Smart Life showed an IP that wasn't the plug's home address | it shows the home's public internet address | use the router's client list for the local IP |
@@ -167,7 +167,7 @@ accept only one local connection at a time.
 ## Part 3 · Names, rooms and what Blood may touch ✅
 
 Good names matter more than prompt wording for small models:
-1. A short, unique, sayable **name** for each device. Ours are "Main light"
+1. A short, unique, sayable **name** for each device. Mine are "Main light"
    (the bulb) and "Bed lights" (the plug). Avoid "Light 1", and avoid vague,
    descriptive names like "big light": they confused Blood.
 2. An **Area** for each (e.g. Bedroom).

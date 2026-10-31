@@ -18,7 +18,7 @@
 5. **A device stopped responding?** Check it still has the same IP (router's
    client list), and that the router is on (chapter 00: Wi-Fi devices need the router).
 
-## Things we learned the hard way (collected from every chapter)
+## Things I learned the hard way (collected from every chapter)
 - **Bluetooth passthrough "Captured" but nothing arrives** → Bluetooth was off in
   Windows. Turn it on (chapter 07).
 - **Home Assistant in this VM listens on port 80 inside the VM**, not 8123. The

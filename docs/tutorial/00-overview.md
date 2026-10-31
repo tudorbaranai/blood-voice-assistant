@@ -1,4 +1,4 @@
-# 00 · Overview: what we're building and why it's built this way
+# 00 · Overview: what I'm building and why it's built this way
 
 **Blood** is a home voice assistant, like Google Home or Alexa, except that:
 
@@ -25,17 +25,17 @@ answers *"Yes?"*, no browser needed *(planned, chapter 09)*.
                                                 [5 home: lights, plugs]
 ```
 
-| # | Job | What we use | Where it runs |
+| # | Job | What I use | Where it runs |
 |---|---|---|---|
-| 1 | Hear "Hey Blood" | openWakeWord, custom model *(planned, chapter 09)* | Windows, our own small program |
+| 1 | Hear "Hey Blood" | openWakeWord, custom model *(planned, chapter 09)* | Windows, my own small program |
 | 2 | **Ear**: speech → text | **Parakeet** (via Home Assistant's Whisper add-on) | Home Assistant VM |
-| 3 | **Brain**: understand and answer | **Ollama** + `qwen3:4b-instruct`, with our own instructions ("prompt") | Windows, on the graphics card |
+| 3 | **Brain**: understand and answer | **Ollama** + `qwen3:4b-instruct`, with my own instructions ("prompt") | Windows, on the graphics card |
 | 4 | **Voice**: text → speech | **Piper**, voice `en_US-libritts_r-medium` | Home Assistant VM |
 | 5 | Control devices | **Home Assistant** integrations (WiZ, Tuya, …) | Home Assistant VM |
 | – | Glue that connects 2–5 | Home Assistant **Assist** voice pipeline | Home Assistant VM |
 
 Home Assistant is the conductor. It already knows how to talk to thousands of
-devices and has a ready-made voice pipeline, so we only build the parts it
+devices and has a ready-made voice pipeline, so I only build the parts it
 doesn't have: the wake word on Windows, the personality, and later the screen.
 
 ---
@@ -44,7 +44,7 @@ doesn't have: the wake word on Windows, the personality, and later the screen.
 
 Everything runs on **one Windows laptop** that stays on 24/7:
 
-| Part | Ours | Minimum that should work |
+| Part | Mine | Minimum that should work |
 |---|---|---|
 | CPU | AMD Ryzen 5 4600H (6 cores) | any 4+ core x86-64 from the last ~6 years |
 | RAM | 8 GB | 8 GB (tight; 16 GB is comfortable) |
@@ -95,10 +95,10 @@ The laptop is still usable for normal things while Blood runs.
 | Where Home Assistant runs | **A virtual machine (VM) on the same laptop** | **A separate mini-PC or Raspberry Pi**: costs money (fine later, it can be moved with a backup). |
 | VM vs. Docker | **VM with Home Assistant OS** | **Docker on Windows**: no add-on store, Bluetooth and network discovery don't reach the container. |
 | Which VM software | **VirtualBox** | **Hyper-V**: built into Windows, but [Home Assistant says it has no USB support](https://www.home-assistant.io/installation/windows/), so the laptop's Bluetooth couldn't be passed in. |
-| VM network | **NAT + port forwarding** | **Bridged over Wi-Fi**: the default in Home Assistant's guide, but it was unreliable on our Realtek Wi-Fi (setup got stuck). |
+| VM network | **NAT + port forwarding** | **Bridged over Wi-Fi**: the default in Home Assistant's guide, but it was unreliable on my Realtek Wi-Fi (setup got stuck). |
 | Model | **`qwen3:4b-instruct`** | **`qwen3:1.7b`**: fastest but made up facts. **`qwen3:4b` / `-thinking`**: smartest, but 11–235 s per answer, far too slow for voice. |
 | Ear | **Parakeet** | **Whisper small**: about half the word errors, but ~4 s per sentence vs. ~0.7 s. |
-| Voice | **Piper** `en_US-libritts_r-medium` | 14 voices auditioned; this one sounded the most natural and cheerful to us. |
+| Voice | **Piper** `en_US-libritts_r-medium` | 14 voices auditioned; this one sounded the most natural and cheerful to me. |
 
 Each chapter explains its own decision in more detail.
 
@@ -117,9 +117,9 @@ Each chapter explains its own decision in more detail.
 | 06 | [The voice: text-to-speech](06-voice-text-to-speech.md) | ✅ |
 | 07 | [Bluetooth into the VM](07-bluetooth-passthrough.md) | ✅ (optional) |
 | 08 | [Lights and plugs](08-lights-and-plugs.md) | ✅ |
-| 09 | [Wake word and our own voice program](09-wake-word-and-voice-program.md) | ⬜ planned |
+| 09 | [Wake word and my own voice program](09-wake-word-and-voice-program.md) | ⬜ planned |
 | 10 | [The screen](10-screen.md) | ⬜ planned |
 | 11 | [Maintenance and troubleshooting](11-maintenance-and-troubleshooting.md) | ✅ (grows over time) |
 
 Every chapter follows the same shape: **Goal → Why → Steps → Check it worked →
-What went wrong for us.** The last part is often the most useful one.
+What went wrong for me.** The last part is often the most useful one.

@@ -5,7 +5,7 @@ Home Assistant OS running in a virtual machine on the laptop, reachable in
 the browser at **http://127.0.0.1:8123**, starting by itself after every reboot.
 
 ## Why a VM, and why VirtualBox
-- **Home Assistant OS** (HAOS) is the full version: add-on store (we need
+- **Home Assistant OS** (HAOS) is the full version: add-on store (I need
   Whisper and Piper), one-click updates and backups, official support. It's a
   whole Linux system, so on Windows it needs a VM.
 - **Not Docker:** the Docker version has no add-on store, and USB/Bluetooth and
@@ -22,22 +22,22 @@ it in the BIOS (AMD: "SVM", Intel: "VT-x").
 
 ### 2. Install VirtualBox
 [virtualbox.org](https://www.virtualbox.org/) → Downloads → **Windows hosts** →
-install with the defaults (we used **7.2.20**).
+install with the defaults (I used **7.2.20**).
 - A warning about **missing Python** dependencies can be ignored. It's only for
   optional scripting bindings.
 - Allow the network driver installs if Windows asks.
 
 > **`VBoxManage`** is VirtualBox's command-line tool. It's **not on the PATH**,
 > so always call it with its full path. The default is
-> `C:\Program Files\Oracle\VirtualBox\VBoxManage.exe` (ours is on another drive).
-> Below we write `$vb` for it. Set it once per PowerShell window:
+> `C:\Program Files\Oracle\VirtualBox\VBoxManage.exe` (mine is on another drive).
+> Below I write `$vb` for it. Set it once per PowerShell window:
 > ```powershell
 > $vb = "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe"
 > ```
 
 ### 3. Download the Home Assistant OS disk image
 [home-assistant.io/installation/windows](https://www.home-assistant.io/installation/windows/) →
-**VirtualBox** → download the **`.vdi`** image (ours: `haos_ova-18.3.vdi.zip`).
+**VirtualBox** → download the **`.vdi`** image (mine: `haos_ova-18.3.vdi.zip`).
 Unzip it into a **permanent** folder (the VM runs from this file), e.g. `D:\Home Assistant VM\`.
 
 ### 4. Create the VM
@@ -47,8 +47,8 @@ VirtualBox → **New**:
 | Name | `Home Assistant` |
 | Type / Version | Linux / **Oracle Linux (64-bit)** |
 | ISO | leave empty |
-| Memory | **2048 MB** to start (we later raised it to **2560 MB**) |
-| Processors | **2** to start (we later raised it to **4**) |
+| Memory | **2048 MB** to start (I later raised it to **2560 MB**) |
+| Processors | **2** to start (I later raised it to **4**) |
 | **Use EFI** | ✅ **required**, or it won't boot |
 
 **Attaching the downloaded disk:** VirtualBox 7.2's basic wizard can only create
@@ -77,7 +77,7 @@ Or from PowerShell (VM can be running):
 
 *Why NAT and not "Bridged"?* Home Assistant's guide suggests Bridged, which
 gives the VM its own address on your home network. Over **Wi-Fi** that was
-unreliable for us (setup crawled at 4–5% for 30 minutes). NAT always works over
+unreliable for me (setup crawled at 4–5% for 30 minutes). NAT always works over
 Wi-Fi. The price: Home Assistant can't *discover* devices on your network
 automatically, so you add them by IP (chapter 08).
 
@@ -127,10 +127,10 @@ curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8123/     # 200 = Home A
 ```
 Then log out and back in (or restart): about 1–2 minutes later, http://127.0.0.1:8123 works on its own.
 
-## What went wrong for us
+## What went wrong for me
 | Problem | Cause | Fix |
 |---|---|---|
-| Setup crawled at 4–5% for 30 min | **Bridged over Wi-Fi** was unreliable on our Realtek Wi-Fi | switched to **NAT** |
+| Setup crawled at 4–5% for 30 min | **Bridged over Wi-Fi** was unreliable on my Realtek Wi-Fi | switched to **NAT** |
 | http://127.0.0.1:8123 wouldn't load, so "Preparing" *looked* stuck | Home Assistant listens on **guest port 80**; guest 8123 only redirects to port 80, so the browser bounced to http://127.0.0.1/ on Windows, where nothing listens | NAT rule **host 8123 → guest 80**. Clue: the VM console banner shows `http://homeassistant.local` with no port, and `core info` at the `ha >` prompt says `port: 80` |
 | Port Forwarding dialog: "ports may not be zero" | the table cell wasn't committed, or an empty extra rule | press **Enter** after each cell, delete extra rules |
 | VirtualBox wizard had no "use existing disk" | moved to Expert mode in 7.2 | attach the `.vdi` under Settings → Storage |

@@ -36,7 +36,7 @@ Hard, flat surface (not a bed or sofa), vents free. Clean the vents every few mo
 
 ### 5. Windows Update shouldn't restart it in the middle of the day
 Settings → Windows Update → Advanced options → **Active hours** → set them to
-cover when you use Blood (we use 10:00–04:00).
+cover when you use Blood (I use 10:00–04:00).
 Optional: Settings → Accounts → Sign-in options → *Use my sign-in info to
 automatically finish setting up after an update*, so the laptop logs back in
 (and Blood starts) after an update restart.
@@ -50,10 +50,10 @@ In PowerShell:
 powercfg /query SCHEME_CURRENT SUB_SLEEP STANDBYIDLE   # "Current AC Power Setting Index: 0x00000000" = never sleep
 powercfg /query SCHEME_CURRENT SUB_BUTTONS LIDACTION   # AC index 0 = do nothing
 ```
-After a day plugged in, the battery should sit at your cap (we see ~60–63%).
+After a day plugged in, the battery should sit at your cap (mine sits at ~60–63%).
 
-## What went wrong for us
-- Nothing broke here, but **we never actually updated the NVIDIA driver** at
+## What went wrong for me
+- Nothing broke here, but **I never actually updated the NVIDIA driver** at
   first and only noticed later (`nvidia-smi` showed a 2024 driver). It still
   works; it's just a "do it when convenient".
 - Auto-start of the VM and Ollama after a reboot is covered in chapter 03.

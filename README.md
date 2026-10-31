@@ -200,7 +200,7 @@ shape: *Goal → Why → Steps → Check it worked → What went wrong for me.*
 6. [The voice: text-to-speech](docs/tutorial/06-voice-text-to-speech.md)
 7. [Bluetooth into the VM](docs/tutorial/07-bluetooth-passthrough.md) *(optional)*
 8. [Lights and plugs](docs/tutorial/08-lights-and-plugs.md)
-9. [Wake word and our own voice program](docs/tutorial/09-wake-word-and-voice-program.md) *(planned)*
+9. [Wake word and my own voice program](docs/tutorial/09-wake-word-and-voice-program.md) *(planned)*
 10. [The screen](docs/tutorial/10-screen.md) *(planned)*
 11. [Maintenance and troubleshooting](docs/tutorial/11-maintenance-and-troubleshooting.md)
 

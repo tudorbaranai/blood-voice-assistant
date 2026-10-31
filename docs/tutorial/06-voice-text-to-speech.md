@@ -6,7 +6,7 @@ Blood's answers are spoken in a natural voice, starting almost instantly, offlin
 ## Why Piper
 Free, offline, fast on a CPU, and available as a Home Assistant add-on. It
 **streams** sentence by sentence, so you only wait for the first sentence.
-"Medium" voices start talking in **~0.2 s**; "high" voices take ~0.9 s and we
+"Medium" voices start talking in **~0.2 s**; "high" voices take ~0.9 s and I
 couldn't hear the difference.
 
 ## Steps
@@ -23,7 +23,7 @@ couldn't hear the difference.
 ### 3. Choose the voice in the assistant
 **Settings → Voice assistants → your assistant → Text-to-speech: piper** →
 language **English (United States)** → **Voice** → Update. Each voice downloads into
-the VM the first time it's used. Our choice: **`en_US-libritts_r-medium`**.
+the VM the first time it's used. My choice: **`en_US-libritts_r-medium`**.
 
 ## Choosing a voice: the audition script (optional)
 [`tests/tts/tts_audition.py`](../../tests/tts/tts_audition.py) makes several
@@ -42,7 +42,7 @@ how fast each one starts.
    ```
 3. Listen to `tests/tts/voices/*.wav`.
 
-What we measured (first sound / speed vs real time):
+What I measured (first sound / speed vs real time):
 | Voice | First sound | Speed |
 |---|---|---|
 | `en_GB-northern_english_male-medium` | 0.15 s | 12× |
@@ -50,8 +50,8 @@ What we measured (first sound / speed vs real time):
 | `en_GB-alan-medium` | 0.19 s | 13× |
 | `en_US-ryan-high`, `en_US-lessac-high`, `en_GB-cori-high` | 0.8–0.9 s | 2.3–2.4× |
 
-We auditioned 14 voices and finally picked **`en_US-libritts_r-medium`**, a
-multi-speaker voice (default speaker) that sounded the most natural and cheerful to us. Taste matters here, so try a few.
+I auditioned 14 voices and finally picked **`en_US-libritts_r-medium`**, a
+multi-speaker voice (default speaker) that sounded the most natural and cheerful to me. Taste matters here, so try a few.
 
 ## Making it say your name right
 Voices read names with English rules, so names from other languages often come
@@ -62,7 +62,7 @@ the list to your own name and run:
 ```powershell
 .venv\Scripts\python.exe tests\tts\name_test.py en_US-libritts_r-medium
 ```
-Listen to `tests/tts/names/`. In our case the phoneme version
+Listen to `tests/tts/names/`. In my case the phoneme version
 `[[ tˈuːdoːɾ ]]` came closest. The voice program (chapter 09) will swap the
 name for its phonemes just before speaking, while the screen still shows the
 normal spelling.
@@ -72,13 +72,13 @@ Assist chat bubble → 🎤 → ask something. You hear the answer. In **Debug**
 *Text-to-speech* shows `tts.piper` with your voice, and near-zero time thanks to streaming.
 
 ## The first full round trip
-With the ear, brain and voice connected, our first spoken question showed:
+With the ear, brain and voice connected, my first spoken question showed:
 speech-to-text **0.73 s**, brain **4.06 s**, voice **~0 s** (streaming). The slow
 brain step led to the prompt-cache fix in chapter 04 (clock at the end of the prompt).
 
-## What went wrong for us
+## What went wrong for me
 | Problem | Cause | Fix |
 |---|---|---|
 | The first voice in the audition looked slow | it included the download and warm-up | re-run: 0.19 s |
-| No voice said our name right | English letter-to-sound rules | phonemes (above) |
+| No voice said my name right | English letter-to-sound rules | phonemes (above) |
 | The add-on's documentation page wouldn't load (HTTP 503) | a temporary GitHub hiccup | the add-on changelog lists the options too |

@@ -5,8 +5,8 @@ Give Home Assistant (inside the VM) the laptop's own Bluetooth, so it can
 control **Bluetooth** devices directly: for example Philips Hue Bluetooth bulbs
 (no Hue Bridge), Bluetooth sensors, and so on.
 
-> **Do you need this?** Only for Bluetooth devices. Our bulb turned out to be
-> **WiZ (Wi-Fi)**, which doesn't need Bluetooth at all (chapter 08). We kept it
+> **Do you need this?** Only for Bluetooth devices. My bulb turned out to be
+> **WiZ (Wi-Fi)**, which doesn't need Bluetooth at all (chapter 08). I kept it
 > anyway, ready for future Bluetooth gadgets.
 
 ## Why it has to be "passed through"
@@ -29,7 +29,7 @@ It should sit under a **USB Root Hub**. Then, in PowerShell:
 & "C:\Program Files\Oracle\VirtualBox\VBoxManage.exe" list usbhost
 ```
 (Use your own VirtualBox folder if you installed it elsewhere.) Note the entry
-for your Bluetooth chip: its **VendorId / ProductId**. Ours shows up under the
+for your Bluetooth chip: its **VendorId / ProductId**. Mine shows up under the
 name of the module maker ("IMC Networks") rather than "Bluetooth", and **the
 webcam had the same maker name**, so go by the product ID, not the name.
 
@@ -64,9 +64,9 @@ From VirtualBox, or with your auto-start task (chapter 03).
    *Captured* is **not** enough, see below.)
 2. In Home Assistant: **Settings → Devices & services**. **Bluetooth** appears
    under *Discovered* → **Add**. Its device page shows an adapter **hci0** with
-   the chip's name (ours: "Bluetooth Radio … by Realtek").
+   the chip's name (mine: "Bluetooth Radio … by Realtek").
 
-## What went wrong for us
+## What went wrong for me
 | Problem | Cause | Fix |
 |---|---|---|
 | `VBoxManage list usbhost` said **Captured**, but nothing appeared in Home Assistant. Inside the VM, `lsusb` showed only empty hubs; in Windows the chip still used its normal Bluetooth driver. `usbattach` said *"busy with a previous request"* | **Bluetooth was switched off in Windows**, so the chip was powered down and VirtualBox couldn't take it over | Turn Bluetooth **on** in Windows. It attached immediately |
@@ -80,5 +80,5 @@ Handy for debugging: the Home Assistant VM's console has a root shell. At the
 With Bluetooth in place, Philips Hue **Bluetooth** bulbs (no bridge) can be added
 with the [Philips Hue BLE integration](https://www.home-assistant.io/integrations/hue_ble/).
 Put the bulb in pairing mode (Hue app → Settings → Voice Assistants → Google Home
-or Alexa → **Make Discoverable**), then add it from *Discovered*. We haven't
-done this ourselves (we have no Hue bulbs), so follow the official page.
+or Alexa → **Make Discoverable**), then add it from *Discovered*. I haven't
+done this myself (I have no Hue bulbs), so follow the official page.
