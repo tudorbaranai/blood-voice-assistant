@@ -89,6 +89,24 @@ came first: if the answer takes too long, I might as well search Google myself.
 "Medium" voices start speaking in about 0.2 s, and I picked a cheerful, almost
 happy one.
 
+## Known limitations
+
+- **Hints are unreliable.** 1 of 4 on the bench: it sometimes promises "I'll
+  turn on the lights" without doing it.
+- **No wake word yet.** You need Home Assistant's Assist open in a browser to
+  talk to it.
+- **English only.** The voice can only pronounce English.
+- **The router has to stay on.** The internet can be off, but the Wi-Fi bulb
+  and plug reach the laptop through the router.
+- **Tested on one room with one bulb and one plug.** Every exposed device is
+  added to each request, so a bigger home means a longer prompt for a small
+  model. I haven't measured how it copes.
+- **The GPU is shared.** `blood-brain` takes ~3.4 of the 4 GB, so for games
+  Ollama has to be stopped, and Blood can't answer until it's started again.
+- **Windows only as written** (VirtualBox, PowerShell). If you pass Bluetooth
+  into the VM ([chapter 07](docs/tutorial/07-bluetooth-passthrough.md)),
+  Windows loses Bluetooth while the VM runs.
+
 ## The system prompt: the part that mattered most
 
 The model is small (4 billion parameters) and its biggest problem is
