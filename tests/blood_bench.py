@@ -140,13 +140,19 @@ class House:
         self.devices = devices
         self.states = {d["name"]: {"state": "off", "brightness": 100, "color": None} for d in devices}
         for name, st in (init or {}).items():
-            self.states[name]["state"] = st
+            if isinstance(st, dict):  # e.g. {"state": "on", "brightness": 30}
+                self.states[name].update(st)
+            else:
+                self.states[name]["state"] = st
 
     def snapshot(self):
         return json.loads(json.dumps(self.states))
 
     def match(self, args):
         name, area = args.get("name"), args.get("area")
+        for key in ("name", "area"):  # Home Assistant's schema only accepts a single string here
+            if args.get(key) is not None and not isinstance(args.get(key), str):
+                return None, f"Invalid slot info: expected str for dictionary value @ data['{key}']"
         domain = args.get("domain")
         if isinstance(domain, str):
             domain = [domain]
@@ -233,7 +239,11 @@ def run_turn(host, model, ctx, messages, house, log):
         if msg.get("_runaway"):
             log.append({"tool": "RUNAWAY", "args": {}, "ok": False, "error": "answer hit the length cap"})
         calls = msg.get("tool_calls") or []
-        text = (msg.get("content") or "").strip()
+        content = msg.get("content") or ""
+        if isinstance(content, list):  # some models send text in parts
+            content = "".join(part.get("text", "") if isinstance(part, dict) else str(part) for part in content)
+            msg["content"] = content
+        text = content.strip()
         messages.append({"role": "assistant", "content": msg.get("content") or "", **({"tool_calls": calls} if calls else {})})
         if text:
             final = text
@@ -281,7 +291,9 @@ def says_state(text, truth_on):
 
 def grade(case, text, before, after, calls_last, calls_all, today):
     problems = []
-    t = text.lower()
+    import unicodedata
+    t = "".join(ch for ch in unicodedata.normalize("NFKD", text.lower()) if not unicodedata.combining(ch))
+    plain = re.sub(r"[^\w\s]", "", t)  # no punctuation, for counting repeats
     fill = {"{today_weekday}": today.strftime("%A").lower(),
             "{plus10_weekday}": (today + datetime.timedelta(days=10)).strftime("%A").lower()}
     calls_last = [c for c in calls_last if c["tool"] != "RUNAWAY"] + [c for c in calls_last if c["tool"] == "RUNAWAY"]
@@ -315,7 +327,11 @@ def grade(case, text, before, after, calls_last, calls_all, today):
         if "brightness" in case and after["Main light"]["brightness"] != case["brightness"]:
             problems.append(f"brightness should be {case['brightness']}, is {after['Main light']['brightness']}")
         if "brightness_below" in case and after["Main light"]["brightness"] >= case["brightness_below"]:
-            problems.append("not dimmed")
+            problems.append(f"not dimmed (brightness {after['Main light']['brightness']})")
+        if "brightness_above" in case and after["Main light"]["brightness"] <= case["brightness_above"]:
+            problems.append(f"not brighter (brightness {after['Main light']['brightness']})")
+        if "brightness_max" in case and after["Main light"]["brightness"] > case["brightness_max"]:
+            problems.append(f"changed too much (brightness {after['Main light']['brightness']})")
         if "color" in case and case["color"] not in str(after["Main light"]["color"]):
             problems.append(f"colour not set to {case['color']}")
         if not succeeded_all:
@@ -359,6 +375,8 @@ def grade(case, text, before, after, calls_last, calls_all, today):
             problems.append(f"should not say '{w}'")
     if case.get("min_hits") and sum(h in t for h in case["hits"]) < case["min_hits"]:
         problems.append(f"fewer than {case['min_hits']} correct items")
+    if case.get("count") and plain.count(case["count"][0]) < case["count"][1]:
+        problems.append(f"said '{case['count'][0]}' {plain.count(case['count'][0])} times, not {case['count'][1]}")
     if case.get("no_refusal") and REFUSAL.search(text):
         problems.append("refused / 'not sure'")
     return problems
