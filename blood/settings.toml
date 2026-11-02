@@ -1,0 +1,30 @@
+# Blood's settings. Change a value, save, restart blood.py.
+
+[wake]
+model = "models/hey_blood.onnx"   # switch to hey_blood_v3.onnx once it tests better
+threshold = 0.2                   # lower = hears you from further away, but more false wake-ups
+
+[mic]
+device = ""                       # empty = the Windows default microphone
+
+[listen]
+wait_for_speech = 5.0             # seconds to start talking after "Yes, Tudor?" (else go back to sleep)
+silence_to_stop = 1.0             # this much quiet after you talk = you're done
+min_speech = 0.4                  # after this much speech, a short pause means you're done...
+silence_if_short = 2.0            # ...before that (one word, or just an echo), wait this long
+max_seconds = 15.0                # never record longer than this
+speech_threshold = 0.5            # how sure the speech detector must be (0..1)
+forget_after = 120                # seconds of silence after which Blood starts a fresh conversation
+
+[heard_fixes]
+# Words the ear often writes wrong -> what you meant. Add your own.
+"bedlights" = "bed lights"
+"bed light" = "bed lights"
+"bad lights" = "bed lights"
+
+[voice]
+name = "en_US-libritts_r-medium"
+volume = 1.0                      # 0.5 = half as loud
+your_name = "Tudor"               # how your name is written (screen, answers)
+name_spoken = "[[ tˈudor ]]"      # how the voice should say it (name test #10, Tudor's pick)
+greeting = "Yes, Tudor?"

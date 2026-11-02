@@ -22,6 +22,9 @@ tests/stt/mic-*/
 # --- Models (e.g. the planned wake-word model, chapter 09) ---
 models/
 
+# --- Blood's log (what you said and when: private) ---
+logs/
+
 # --- Editor / OS clutter ---
 .vscode/
 .idea/

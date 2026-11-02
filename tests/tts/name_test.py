@@ -12,6 +12,7 @@ Listen and pick the number that sounds most like you.
 Usage:
     python name_test.py                         uses en_US-ryan-high
     python name_test.py en_US-ryan-medium       try another voice
+    python name_test.py en_US-ryan-medium 2     round 2 spellings (numbers 9-16)
 """
 import asyncio
 import pathlib
@@ -34,12 +35,25 @@ SPELLINGS = [
     "[[ tˈuːdoːɾ ]]",    # 8  exact sounds: TOO-do, with a tapped r (closer to Romanian)
 ]
 
+# Round 2, aimed at the Romanian sounds: short u, clear o, rolled/tapped r
+ROUND_2 = [
+    "[[ tˈudoɾ ]]",      # 9   short u, short o, tapped r
+    "[[ tˈudor ]]",      # 10  short u, short o, rolled r
+    "[[ tˈuːdɔɾ ]]",     # 11  long u, open o, tapped r
+    "[[ tˈʊdoɾ ]]",      # 12  "book" u, tapped r
+    "[[ tˈudɔr ]]",      # 13  short u, open o, rolled r
+    "[[ tˈuːdoɹ ]]",     # 14  long u, clear o, English r
+    "[[ tˈuːdoː ]]",     # 15  no r at all (British style)
+    "[[ tˈuːdo ]] r",    # 16  name, then a separate r
+]
+
 
 async def main():
     voice = sys.argv[1] if len(sys.argv) > 1 else "en_US-ryan-high"
+    spellings, first = (ROUND_2, 9) if "2" in sys.argv[2:] else (SPELLINGS, 1)
     OUT.mkdir(exist_ok=True)
     await synthesize("Hello.", voice)  # warm-up
-    for number, name in enumerate(SPELLINGS, 1):
+    for number, name in enumerate(spellings, first):
         clips = []
         for text in (f"Yes, {name}?", f"Good morning, {name}. The lights are on."):
             audio, rate, width, channels, _, _ = await synthesize(text, voice)
