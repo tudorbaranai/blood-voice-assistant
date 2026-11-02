@@ -6,15 +6,19 @@
 Start it:
     .venv\\Scripts\\python.exe blood\\blood.py
 Stop it with Ctrl+C. Settings are in blood\\settings.toml, the log in logs\\blood.log.
+At login it starts by itself, hidden (Task Scheduler: "Blood - voice program").
 """
 import asyncio
 import collections
 import logging
+import logging.handlers
 import pathlib
 import re
+import socket
 import sys
 import time
 import tomllib
+import winsound
 
 import numpy as np
 import sounddevice as sd
@@ -54,12 +58,27 @@ def tidy_heard(text, fixes):
 def setup_logging():
     (ROOT / "logs").mkdir(exist_ok=True)
     fmt = logging.Formatter("%(asctime)s  %(message)s", "%Y-%m-%d %H:%M:%S")
-    file = logging.FileHandler(ROOT / "logs" / "blood.log", encoding="utf-8")
-    screen = logging.StreamHandler(sys.stdout)
-    for h in (file, screen):
+    # 1 MB per file, the last 3 kept: it runs for months, the log must not grow forever
+    handlers = [logging.handlers.RotatingFileHandler(ROOT / "logs" / "blood.log", maxBytes=1_000_000,
+                                                     backupCount=3, encoding="utf-8")]
+    if sys.stdout:                     # started hidden (pythonw) = no screen to print to
+        handlers.append(logging.StreamHandler(sys.stdout))
+    for h in handlers:
         h.setFormatter(fmt)
         log.addHandler(h)
     log.setLevel(logging.INFO)
+
+
+def only_one_blood():
+    """Two Bloods would both answer. The first one holds this local port; a
+    second one sees it's taken and quits."""
+    lock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        lock.bind(("127.0.0.1", 47201))
+    except OSError:
+        log.info("Blood is already running, this copy quits.")
+        sys.exit(0)
+    return lock
 
 
 class Mic:
@@ -99,14 +118,32 @@ class Blood:
         return clean(text, self.voice["your_name"], self.voice["name_spoken"])
 
     async def start(self):
+        await self.wait_for_home_assistant()
         self.mic = Mic(self.cfg["mic"]["device"])
-        self.greeting = await render(self.spoken(self.voice["greeting"]), self.voice["name"])
         log.info(f"Ready. Listening for '{self.wake_name}' (threshold {self.cfg['wake']['threshold']}). Ctrl+C to stop.")
         while True:
             await self.wait_for_wake_word()
-            await self.handle_request()
+            try:
+                await self.handle_request()
+            except Exception:                  # never let one bad request stop Blood
+                log.exception("Something went wrong with this request")
+                winsound.Beep(300, 400)        # low beep = "that didn't work"
             self.mic.flush()
             self.wake.reset()
+
+    async def wait_for_home_assistant(self):
+        """After a restart the VM needs 1-2 minutes. The voice lives in HA too, so
+        making the greeting is a good "is it up?" test: retry until it works."""
+        waiting = False
+        while True:
+            try:
+                self.greeting = await render(self.spoken(self.voice["greeting"]), self.voice["name"])
+                return
+            except OSError:
+                if not waiting:
+                    log.info("Waiting for Home Assistant (the voice isn't reachable yet)...")
+                    waiting = True
+                await asyncio.sleep(10)
 
     async def wait_for_wake_word(self):
         threshold = self.cfg["wake"]["threshold"]
@@ -192,13 +229,17 @@ class Blood:
 
 
 async def main():
-    setup_logging()
     cfg = tomllib.loads((ROOT / "blood" / "settings.toml").read_text(encoding="utf-8"))
     await Blood(cfg).start()
 
 
 if __name__ == "__main__":
+    setup_logging()
+    lock = only_one_blood()
     try:
         asyncio.run(main())
     except KeyboardInterrupt:
-        print("\nStopped.")
+        log.info("Stopped.")
+    except Exception:
+        log.exception("Blood crashed (Task Scheduler restarts it in a minute)")
+        raise
