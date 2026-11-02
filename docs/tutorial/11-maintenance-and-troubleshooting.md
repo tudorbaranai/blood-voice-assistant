@@ -17,6 +17,18 @@
    stage (speech-to-text, conversation, text-to-speech) with its timing or error.
 5. **A device stopped responding?** Check it still has the same IP (router's
    client list), and that the router is on (chapter 00: Wi-Fi devices need the router).
+6. **"Hey Blood" does nothing?** Open `logs\blood.log`:
+   - no `Ready. Listening…` line since the last boot → the task didn't start:
+     Task Scheduler → *Blood - Voice program* → Run, or double-click
+     `tools\blood-restart.cmd`
+   - `Waiting for Home Assistant…` → the VM or the Piper add-on isn't up yet
+   - `Wake word (score …)` lines appear but it seems deaf afterwards → read the
+     `Heard:` line: what the ear got, what was sent, and the timings
+   - no `Wake word` lines at all → run `blood\wake_test.py` to see the scores
+     (chapter 09); stop the background Blood first, both want the mic
+7. **Answers suddenly slow?** `ollama ps`: the model should be `blood-brain`,
+   `100% GPU`. If it's another name or part CPU, re-pick `blood-brain` in the
+   Ollama agent's settings (chapter 04).
 
 ## Things I learned the hard way (collected from every chapter)
 - **Bluetooth passthrough "Captured" but nothing arrives** → Bluetooth was off in
@@ -29,8 +41,19 @@
   the top made every answer re-read the whole prompt, which cost 4–7 s
   (chapter 04).
 - **Small models sometimes write non-English letters** even when told not to.
-  The prompt's English-only rule catches most of it; the planned voice program
-  will clean the text before speaking (chapter 09).
+  The prompt's English-only rule catches most of it; the voice program cleans
+  the text before speaking (chapter 09).
+- **No clock in the prompt at all.** Even at the end, it sits before the
+  conversation, so every new minute made the brain re-read everything said so
+  far: 12–18 s per answer by voice (chapters 04 and 09).
+- **Google Colab's notebook breaks as Colab updates.** In late 2026 it took
+  eight fixes to train a wake word, and the free GPU stops after a few hours a
+  day. Every fix is in chapter 09, Part 1.
+- **Check how a training tool cuts your clips before you feed it your own
+  recordings.** openWakeWord labels the *end* of each clip; uncut recordings
+  made the model worse (chapter 09, Part 2).
+- **Keep some recordings out of training** and test on those. Testing on the
+  clips a model trained on only tells you it memorised them.
 
 ## Ideas for later
 - **Weather without sending your voice anywhere:** Home Assistant's free *Met.no*

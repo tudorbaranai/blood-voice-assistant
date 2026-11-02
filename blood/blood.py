@@ -26,6 +26,7 @@ from openwakeword.model import Model
 from openwakeword.vad import VAD
 
 from ha import Assist
+from screen import NoScreen, Screen
 from speak import clean, play, render, say
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -53,6 +54,11 @@ def tidy_heard(text, fixes):
         text = re.sub(rf"\b{re.escape(wrong)}\b", right, text, flags=re.I)
     text = re.sub(r"\s+", " ", text).strip(" ,.")
     return text[:1].upper() + text[1:]
+
+
+def mic_level(chunk):
+    """How loud you are, 0..1, for the screen's orb (normal speech is about 0.3-0.8)."""
+    return min(1.0, float(np.sqrt(np.mean(chunk.astype(np.float64) ** 2))) / 2500)
 
 
 def setup_logging():
@@ -113,11 +119,17 @@ class Blood:
         self.assist = Assist()
         self.voice = cfg["voice"]
         self.last_request = 0.0
+        screen = cfg.get("screen", {})
+        self.screen = Screen(screen.get("hide_after", 10)) if screen.get("enabled", True) else NoScreen()
 
     def spoken(self, text):
         return clean(text, self.voice["your_name"], self.voice["name_spoken"])
 
+    def level(self, value):
+        self.screen.send(level=round(value, 3))
+
     async def start(self):
+        await self.screen.start()
         await self.wait_for_home_assistant()
         self.mic = Mic(self.cfg["mic"]["device"])
         log.info(f"Ready. Listening for '{self.wake_name}' (threshold {self.cfg['wake']['threshold']}). Ctrl+C to stop.")
@@ -128,6 +140,7 @@ class Blood:
             except Exception:                  # never let one bad request stop Blood
                 log.exception("Something went wrong with this request")
                 winsound.Beep(300, 400)        # low beep = "that didn't work"
+            self.screen.done()
             self.mic.flush()
             self.wake.reset()
 
@@ -154,8 +167,10 @@ class Blood:
                 return
 
     async def handle_request(self):
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, play, *self.greeting, self.voice["volume"])
+        asyncio.create_task(self.screen.show())             # screen on, window to the front
+        self.screen.send(state="speaking")
+        await play(*self.greeting, self.voice["volume"], on_level=self.level)
+        self.screen.send(state="listening")
         await asyncio.sleep(0.25)                          # the room's echo of "Yes, Tudor?" dies down
         self.mic.flush()                                   # don't send Blood's own voice
 
@@ -175,6 +190,7 @@ class Blood:
             ear = time.perf_counter() - t0
             said = tidy_heard(heard or "", self.cfg.get("heard_fixes", {}))
             if said:
+                self.screen.send(state="thinking", heard=said)
                 answer = await self.assist.ask_text(said)
                 if answer and PROMISE.search(answer) and len(answer) < 160:
                     log.info(f"Only a promise ({answer!r}), telling it to go ahead")
@@ -188,7 +204,8 @@ class Blood:
         log.info(f"Heard: {heard!r} -> sent {said!r}  ->  Blood: {answer!r}  "
                  f"(ear {ear if heard else 0:.1f}s, total {time.perf_counter() - t0:.1f}s)")
         if answer:
-            await say(self.spoken(answer), self.voice["name"], self.voice["volume"])
+            self.screen.send(state="speaking", answer=clean(answer))      # the screen shows "Tudor"
+            await say(self.spoken(answer), self.voice["name"], self.voice["volume"], on_level=self.level)
 
     async def wait_for_speech(self):
         """Wait until you start talking. Returns the last ~0.5 s of sound (so the
@@ -199,6 +216,7 @@ class Blood:
         in_a_row = 0
         for _ in range(int(cfg["wait_for_speech"] / CHUNK_SECONDS)):
             chunk = await self.mic.read()
+            self.level(mic_level(chunk))
             before.append(chunk)
             talking = self.vad.predict(chunk, frame_size=640) >= cfg["speech_threshold"]
             in_a_row = in_a_row + 1 if talking else 0
@@ -219,6 +237,7 @@ class Blood:
             if quiet >= (cfg["silence_to_stop"] if speech >= cfg["min_speech"] else cfg["silence_if_short"]):
                 break
             chunk = await self.mic.read()
+            self.level(mic_level(chunk))
             yield chunk.tobytes()
             total += CHUNK_SECONDS
             if self.vad.predict(chunk, frame_size=640) >= cfg["speech_threshold"]:

@@ -38,10 +38,13 @@ mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speaker
 
 ## What it can do
 
-I talk to Blood through Home Assistant's Assist, by voice from the browser or by
-typing. It switches the bulb and the plug, dims the light, changes its colour,
-and answers general questions. It knows the date and the weekday, and it says so
-when it can't check something live, like the weather.
+I say **"Hey Blood"**, it answers **"Yes, Tudor?"**, and I talk. A small
+program on the laptop listens all the time, starts by itself at login, and
+needs no browser ([chapter 09](docs/tutorial/09-wake-word-and-voice-program.md)).
+I can also type to it in Home Assistant's Assist. It switches the bulb and the
+plug, dims the light, changes its colour, and answers general questions. It
+knows the date and the weekday, and it says so when it can't check something
+live, like the weather.
 
 Plain commands ("turn off the main light") are handled instantly by Home
 Assistant's own matcher. Anything that needs understanding goes to the AI: when
@@ -78,7 +81,27 @@ Latest run ([full results](tests/results/bench-v12-blood-brain-2026-10-24_22-47.
 Hints are the weak spot. The one I use works at home, but on other phrasings,
 like "I can't see anything, it's so dark", it replies "I'll turn on the lights
 for you" without calling the switch. Those three answers are the lies the bench
-catches.
+catches. In November I added 14 harder cases and prompt v13; those runs are in
+[the results summary](tests/results/README.md).
+
+**Wake word.** My own "Hey Blood" model, trained on computer voices only (v1),
+on recordings of me it never trained on:
+
+| Where I said it | Heard |
+|---|---|
+| At the desk | 10/12 |
+| From the bed | 3/12 |
+| Across the room | 3/12 |
+| Normal talk (false wake-ups) | 0/12 |
+
+Fine up close, poor at a distance. Retraining with my own recordings went
+wrong the first time (v2: worse everywhere) and taught me how the training
+cuts clips; the fixed version is ready to run
+([chapter 09](docs/tutorial/09-wake-word-and-voice-program.md#part-2--teach-it-your-own-voice-and-test-it-honestly)).
+
+**Whole conversation.** From the end of my sentence to Blood's answer: about
+1.5–3 s for most requests, about 1 s when Home Assistant matches the sentence
+itself. The first version took 12–18 s; [why](docs/tutorial/09-wake-word-and-voice-program.md#making-it-fast).
 
 **Ear.** On the same 15 recorded sentences (recorded before I tuned the mic),
 Parakeet took about 0.7 s each with 9% word errors. Whisper small made fewer mistakes (4%) but took about 4 s, too
@@ -93,8 +116,14 @@ happy one.
 
 - **Hints are unreliable.** 1 of 4 on the bench: it sometimes promises "I'll
   turn on the lights" without doing it.
-- **No wake word yet.** You need Home Assistant's Assist open in a browser to
-  talk to it.
+- **The wake word is weak at a distance** (3/12 from the bed). It works best
+  said clearly, with a strong "H".
+- **Two actions in one sentence can be half done.** "Make it brighter and
+  blue" changed only the brightness, but Blood said both were done. One action
+  per sentence works.
+- **Training the wake word needs Google Colab** (free, but online, a few GPU
+  hours a day, and the notebook needed eight fixes in late 2026). The finished
+  model runs offline.
 - **English only.** The voice can only pronounce English.
 - **The router has to stay on.** The internet can be off, but the Wi-Fi bulb
   and plug reach the laptop through the router.
@@ -112,7 +141,7 @@ happy one.
 The model is small (4 billion parameters) and its biggest problem is
 hallucination: inventing facts, or saying it switched a light it never touched.
 The system prompt, the instructions it gets before every question, turned out to
-control that more than anything else. I rewrote it twelve times
+control that more than anything else. I rewrote it thirteen times
 ([every version](prompts/)). A single rewrite (v5 → v6) took my ten trick
 questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
 
@@ -143,6 +172,16 @@ questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
   With the clock (to the minute) at the top, the whole prompt was re-read on
   every question: 4–7 s per answer. Moving it to the bottom fixed it.
   ([chapter 04](docs/tutorial/04-connect-brain-and-prompt.md))
+- **...and then the clock had to go completely.** The conversation comes *after*
+  the prompt, so once the voice program kept a long conversation, every new
+  minute made the brain re-read all of it: 12–18 s per answer. Now there's no
+  clock (Home Assistant answers the time itself), and a fresh conversation
+  starts after 2 minutes of silence.
+- **Check how a training tool cuts your clips.** openWakeWord treats the *end*
+  of each clip as the wake word. My recordings had 1.4 s of silence after the
+  phrase, so the model learned the silence, and got worse. Also: keep some
+  recordings out of training, and test on those.
+  ([chapter 09](docs/tutorial/09-wake-word-and-voice-program.md))
 - **Home Assistant quietly overrides the context size.** It asks Ollama for
   8192 tokens, which pushed 36% of the model onto the slow CPU. Setting 4096
   brought that to 27%, and forcing every layer onto the 4 GB GPU took the
@@ -167,6 +206,7 @@ questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
 | 9–12 Oct | Benchmarked models and moved from `qwen3:1.7b` to `qwen3:4b-instruct`. Chose the ear and the voice, tuned the mic. |
 | 13 Oct | First light switched by Home Assistant. Surprise: the bulb I thought was a Philips Hue was a WiZ, so the Bluetooth setup I'd just done wasn't needed. |
 | 24 Oct | Smart plug working locally (installed by hand, because the community store's GitHub login was broken). Built the bench with the lie detector, prompts v8 → v12, all layers on the GPU. |
+| 2 Nov | "Hey Blood": trained my own wake word on Google Colab (after eight notebook fixes), recorded 200 clips of my voice, and found out the hard way how training cuts them. Wrote the voice program, took it from 12–18 s to ~2 s per answer, prompt v13, and set it to start by itself at login. |
 
 I built this with Claude Code as a pair programmer; the decisions, testing and
 hardware are mine.
@@ -200,8 +240,8 @@ shape: *Goal → Why → Steps → Check it worked → What went wrong for me.*
 6. [The voice: text-to-speech](docs/tutorial/06-voice-text-to-speech.md)
 7. [Bluetooth into the VM](docs/tutorial/07-bluetooth-passthrough.md) *(optional)*
 8. [Lights and plugs](docs/tutorial/08-lights-and-plugs.md)
-9. [Wake word and my own voice program](docs/tutorial/09-wake-word-and-voice-program.md) *(planned)*
-10. [The screen](docs/tutorial/10-screen.md) *(planned)*
+9. [Wake word and my own voice program](docs/tutorial/09-wake-word-and-voice-program.md): training on Colab with every fix, your own voice, the program, auto-start
+10. [The screen](docs/tutorial/10-screen.md) *(choosing the design)*
 11. [Maintenance and troubleshooting](docs/tutorial/11-maintenance-and-troubleshooting.md)
 
 To run the brain bench against your own Ollama (Python 3.9+, no extra
@@ -210,7 +250,7 @@ packages), from the repo folder:
 ```powershell
 ollama pull qwen3:4b-instruct
 ollama create blood-brain -f tools\blood-brain.Modelfile
-python tests\blood_bench.py --model blood-brain --prompt prompts\prompt_v12_devices.txt --label my-run
+python tests\blood_bench.py --model blood-brain --prompt prompts\prompt_v13_devices.txt --label my-run
 python tests\blood_bench.py --compare
 ```
 
@@ -220,9 +260,19 @@ The prompts use my name (Tudor). Replace it with yours: Blood addresses you by n
 
 ```
 docs/tutorial/           the step-by-step guide
-prompts/                 every version of Blood's instructions, v2 → v12
+blood/                   the voice program
+  blood.py               wake word → "Yes, Tudor?" → record → Home Assistant → speak
+  ha.py, speak.py        Home Assistant's ear and brain; the voice, with text cleaning
+  settings.toml          everything you might tune, in one place
+  record_wake.py         record your own wake-word clips, hands-free
+  pack_voice.py          split them into training clips and a held-back test set
+  wake_test.py           live mic test: the score of every attempt
+  wake_eval.py           score a model on your recordings (--holdout: only the held-back ones)
+  colab_train_v3.sh      train "Hey Blood" on Colab with your clips (v2: the version that went wrong)
+  screen*.py/.html       the pop-up screen, and five design candidates (in progress)
+prompts/                 every version of Blood's instructions, v2 → v13
 tests/
-  blood_bench.py         the brain bench: 56 cases, pretend house, lie detector
+  blood_bench.py         the brain bench: 70 cases, pretend house, lie detector
   blood_bench_cases.json the test sentences and the pretend devices
   compare-brains.ps1     early side-by-side test of several models on trick questions
   questions-limits.txt   the trick questions
@@ -232,6 +282,7 @@ tests/
   results/               every saved bench run, summarised in its README
 tools/
   blood-brain.Modelfile  Ollama settings Home Assistant can't set (GPU layers, answer cap)
+  blood-restart.cmd      restart the background voice program after changing its settings
   find_wiz_bulbs.py      find WiZ bulbs on the network
 ```
 
@@ -250,12 +301,13 @@ through the router, so the router has to stay on.
 
 ## What's next
 
-The project is paused for now, with the core working. Next on the list:
+The core works and Blood now listens on its own. Next on the list:
 
-- a **"Hey Blood" wake word** and a small Windows program that listens and speaks
-  on its own, so no browser is needed ([plan](docs/tutorial/09-wake-word-and-voice-program.md))
-- **my own interface**, designed for my home instead of Home Assistant's default
-  dashboard
+- **wake word v3**, trained with my own clips cut the right way, to hear me from
+  the bed and across the room
+- **the screen**: a full-screen window that pops up on "Hey Blood" with what I
+  said, the answer, and an orb that moves with the voice. Five designs are
+  waiting for my pick ([chapter 10](docs/tutorial/10-screen.md))
 - **automations**, the thing I wanted in the first place
 
 ## License

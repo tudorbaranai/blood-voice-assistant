@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blood screen designs</title>
+<style>
+  :root { --red: #e0142f; --text: #f3f3f6; --dim: #8d8d99; }
+  html, body { margin: 0; height: 100%; background: #000; overflow: hidden; color: var(--text);
+               font-family: "Segoe UI", system-ui, sans-serif; }
+  canvas { position: fixed; inset: 0; width: 100%; height: 100%; }
+  .ui { position: fixed; inset: 0; display: none; pointer-events: none; }
+  .ui.on { display: block; }
+  .cursor::after { content: "▍"; color: var(--red); animation: blink 1s steps(1) infinite; margin-left: 2px; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* menu */
+  #menu { position: fixed; top: 12px; left: 12px; right: 12px; z-index: 10; display: flex; flex-wrap: wrap;
+          gap: 6px; align-items: center; transition: opacity .5s; }
+  #menu button { background: rgba(255,255,255,.07); color: #ddd; border: 1px solid rgba(255,255,255,.12);
+                 border-radius: 999px; padding: 6px 12px; font: 13px "Segoe UI", sans-serif; cursor: pointer; }
+  #menu button.on { background: var(--red); border-color: var(--red); color: #fff; }
+  #about { width: 100%; font-size: 12.5px; color: #aaa; padding: 2px 4px; }
+  .status { font-size: 1.5vh; letter-spacing: .35em; text-transform: uppercase; color: var(--red); }
+
+  /* 1 Blood Moon: chat bubbles under the orb */
+  #ui1 .chat { position: absolute; left: 50%; transform: translateX(-50%); bottom: 4vh; width: min(760px, 90vw);
+               display: flex; flex-direction: column; gap: 1.2vh; }
+  #ui1 .status { position: absolute; top: 57vh; width: 100%; text-align: center; }
+  #ui1 .you { align-self: flex-end; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.08);
+              padding: 1vh 1.6vh; border-radius: 2vh 2vh .5vh 2vh; font-size: 2.3vh; max-width: 75%; }
+  #ui1 .blood { align-self: flex-start; font-size: 2.6vh; line-height: 1.4; max-width: 85%; }
+  #ui1 .old { opacity: .35; }
+
+  /* 2 Crimson Glow: big captions */
+  #ui2 .caps { position: absolute; left: 8vw; right: 8vw; top: 14vh; text-align: center; }
+  #ui2 .old { color: #5c5c66; font-size: 2.2vh; margin-bottom: 1.4vh; }
+  #ui2 .now { font-size: 5vh; line-height: 1.3; font-weight: 300; margin-top: 3vh; }
+  #ui2 .now.you { color: #c9c9d2; font-style: italic; }
+  #ui2 .status { position: absolute; bottom: 44vh; width: 100%; text-align: center; }
+
+  /* 3 Arc Reactor: terminal log on the right */
+  #ui3 .log { position: absolute; right: 4vw; top: 12vh; bottom: 10vh; width: 36vw; font: 1.9vh/1.6 Consolas, monospace;
+              border-left: 1px solid rgba(224,20,47,.35); padding-left: 2vw; display: flex; flex-direction: column;
+              justify-content: flex-end; gap: 1.2vh; }
+  #ui3 .t { color: #6b2a33; } #ui3 .who-you { color: #ff8a98; } #ui3 .who-blood { color: var(--red); font-weight: bold; }
+  #ui3 .status { position: absolute; left: 0; width: 70vw; top: 74vh; text-align: center; font-family: Consolas, monospace; }
+
+  /* 4 Particle Sphere: subtitles */
+  #ui4 .subs { position: absolute; left: 10vw; right: 10vw; bottom: 7vh; text-align: center; }
+  #ui4 .you { color: var(--dim); font-size: 2.3vh; margin-bottom: 1.2vh; }
+  #ui4 .blood { font-size: 3.4vh; line-height: 1.35; text-shadow: 0 2px 12px #000; }
+  #ui4 .status { position: absolute; top: 4.5vh; width: 100%; text-align: center; }
+
+  /* 5 Liquid Glass: frosted card with a messenger chat */
+  #ui5 .card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: min(620px, 88vw);
+               height: 72vh; border-radius: 28px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14);
+               backdrop-filter: blur(28px); -webkit-backdrop-filter: blur(28px); display: flex; flex-direction: column;
+               box-shadow: 0 30px 80px rgba(0,0,0,.5); overflow: hidden; }
+  #ui5 .head { display: flex; align-items: center; gap: 14px; padding: 18px 22px; border-bottom: 1px solid rgba(255,255,255,.1); }
+  #ui5 .mini { width: 34px; height: 34px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #ff9aa6, #d10f2a 55%, #4a0010); }
+  #ui5 .name { font-weight: 600; font-size: 17px; } #ui5 .status { font-size: 11px; letter-spacing: .25em; }
+  #ui5 .bars { margin-left: auto; display: flex; gap: 3px; align-items: center; height: 30px; }
+  #ui5 .bars i { width: 4px; border-radius: 2px; background: #ff5468; height: 3px; }
+  #ui5 .msgs { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 18px 22px; }
+  #ui5 .you { align-self: flex-end; background: linear-gradient(135deg, #e0142f, #a50a22); padding: 10px 14px;
+              border-radius: 18px 18px 4px 18px; max-width: 78%; font-size: 16px; }
+  #ui5 .blood { align-self: flex-start; background: rgba(255,255,255,.1); padding: 10px 14px;
+                border-radius: 18px 18px 18px 4px; max-width: 82%; font-size: 16px; line-height: 1.4; }
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="menu">
+  <button data-d="1">1 · Blood Moon</button>
+  <button data-d="2">2 · Crimson Glow</button>
+  <button data-d="3">3 · Arc Reactor</button>
+  <button data-d="4">4 · Particle Sphere</button>
+  <button data-d="5">5 · Liquid Glass</button>
+  <button id="mic">🎤 Use my mic</button>
+  <div id="about"></div>
+</div>
+
+<div class="ui" id="ui1"><div class="status"></div><div class="chat"></div></div>
+<div class="ui" id="ui2"><div class="caps"></div><div class="status"></div></div>
+<div class="ui" id="ui3"><div class="log"></div><div class="status"></div></div>
+<div class="ui" id="ui4"><div class="status"></div><div class="subs"></div></div>
+<div class="ui" id="ui5"><div class="card">
+  <div class="head"><div class="mini"></div><div><div class="name">Blood</div><div class="status"></div></div><div class="bars"></div></div>
+  <div class="msgs"></div></div></div>
+
+<script>
+const ABOUT = {
+  1: "Blood Moon: like ChatGPT's voice mode. A liquid red orb that wobbles with the voice, the chat as bubbles underneath, dark red nebula behind.",
+  2: "Crimson Glow: like Gemini Live. A red-orange glow rises from the bottom edge with the voice, big live captions in the middle.",
+  3: "Arc Reactor: the Iron Man / Jarvis HUD. Spinning rings and a voice equalizer around the core, a terminal-style log on the right.",
+  4: "Particle Sphere: a 3D ball of 700 points that ripples when you talk and bursts when Blood speaks, stars behind, film-style subtitles.",
+  5: "Liquid Glass: slow lava-lamp colours in the background, a frosted-glass chat window in front, like a messaging app.",
+};
+const STATUS = { idle: "Say “Hey Blood”", wake: "Yes, Tudor?", listening: "Listening", thinking: "Thinking", speaking: "Speaking" };
+const CONVOS = [
+  ["Dim the main light a little.", "The main light is now dimmer."],
+  ["Who's better, Messi or Ronaldo?", "Most people would say Messi, for his consistency and record-breaking achievements."],
+  ["It's too dark in here.", "The lights are on."],
+  ["Tell me a joke about bananas.", "Why did the banana go to the doctor? Because it wasn't peeling well."],
+];
+
+// ---------- the pretend conversation (shared by all designs) ----------
+const S = { state: "idle", level: 0, smooth: 0 };
+let msgs = [], design = 1, micLevel = null, convo = 0, cycleStart = performance.now() / 1000;
+const esc = s => s.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const voiceEnv = t => Math.max(0, .55 * Math.abs(Math.sin(t * 7.3)) * (.55 + .45 * Math.sin(t * 1.9)) + .08 * Math.random());
+const words = (s, n) => s.split(" ").slice(0, n).join(" ");
+
+function step(now) {
+  const [you, blood] = CONVOS[convo % CONVOS.length];
+  const t = now - cycleStart, nYou = you.split(" ").length, nBlood = blood.split(" ").length;
+  const listenEnd = 2.7 + Math.max(2.2, nYou * .38), thinkEnd = listenEnd + 1.6, speakEnd = thinkEnd + nBlood * .32 + .6;
+  let state = "idle", live = null;
+  if (t < 1.5) state = "idle";
+  else if (t < 2.7) { state = "wake"; if (msgs.length && msgs.at(-1).fresh) msgs.forEach(m => m.fresh = false); }
+  else if (t < listenEnd) { state = "listening"; live = ["you", words(you, Math.ceil((t - 2.7) / .38)), false]; }
+  else if (t < thinkEnd) { state = "thinking"; live = ["you", you, true]; }
+  else if (t < speakEnd) { state = "speaking"; live = ["blood", words(blood, Math.ceil((t - thinkEnd) / .32)), false]; }
+  else if (t < speakEnd + 3) state = "idle";
+  else { convo++; cycleStart = now; }
+  if (live) {
+    const last = msgs.at(-1);
+    if (last && last.who === live[0] && !last.done) { last.text = live[1]; last.done = live[2]; }
+    else if (!(last && last.who === live[0] && last.done && live[2])) msgs.push({ who: live[0], text: live[1], done: live[2] });
+    if (state === "speaking" && msgs.at(-2)?.who === "you") msgs.at(-2).done = true;
+  }
+  if (state === "idle" && msgs.at(-1) && !msgs.at(-1).done) msgs.at(-1).done = true;
+  msgs = msgs.slice(-6);
+  S.state = state;
+  const fake = (state === "listening" || state === "speaking" || state === "wake") ? voiceEnv(t) : 0;
+  S.level = state === "listening" && micLevel !== null ? micLevel : fake;
+}
+
+// ---------- the text side of each design ----------
+function cls(m) { return m.done ? "" : " cursor"; }
+const RENDER = {
+  1: () => { q("#ui1 .chat").innerHTML = msgs.slice(-4).map((m, i, a) =>
+         `<div class="${m.who}${i < a.length - 2 ? " old" : ""}${cls(m)}">${esc(m.text)}</div>`).join(""); },
+  2: () => { const cur = msgs.at(-1), old = msgs.slice(-3, -1);
+         q("#ui2 .caps").innerHTML = old.map(m => `<div class="old">${m.who === "you" ? "You: " : ""}${esc(m.text)}</div>`).join("")
+           + (cur ? `<div class="now ${cur.who}${cls(cur)}">${esc(cur.text)}</div>` : ""); },
+  3: () => { q("#ui3 .log").innerHTML = msgs.map(m => `<div><span class="t">[21:0${msgs.indexOf(m)}]</span> `
+         + `<span class="who-${m.who}">${m.who === "you" ? "TUDOR" : "BLOOD"} &gt;</span> <span class="${cls(m)}">${esc(m.text)}</span></div>`).join(""); },
+  4: () => { const b = [...msgs].reverse().find(m => m.who === "blood"), y = [...msgs].reverse().find(m => m.who === "you");
+         const showB = b && msgs.indexOf(b) > msgs.indexOf(y);
+         q("#ui4 .subs").innerHTML = (y ? `<div class="you${cls(y)}">${esc(y.text)}</div>` : "")
+           + (showB ? `<div class="blood${cls(b)}">${esc(b.text)}</div>` : ""); },
+  5: () => { q("#ui5 .msgs").innerHTML = msgs.map(m => `<div class="${m.who}${cls(m)}">${esc(m.text)}</div>`).join(""); },
+};
+const q = s => document.querySelector(s);
+let lastHTML = "";
+function renderText() {
+  const key = design + S.state + JSON.stringify(msgs);
+  if (key !== lastHTML) { RENDER[design](); lastHTML = key; }
+  document.querySelectorAll(`#ui${design} .status`).forEach(e => e.textContent = STATUS[S.state]);
+}
+
+// ---------- the animated side of each design ----------
+const cv = q("#c"), ctx = cv.getContext("2d");
+let W, H, D = devicePixelRatio || 1;
+function resize() { W = cv.width = innerWidth * D; H = cv.height = innerHeight * D; }
+addEventListener("resize", resize); resize();
+const rgba = (r, g, b, a) => `rgba(${r},${g},${b},${a})`;
+const ease = { glow: .3, size: .9, spin: 0 };
+
+function glowCircle(x, y, r, color, a) {
+  const g = ctx.createRadialGradient(x, y, 0, x, y, r);
+  g.addColorStop(0, color.replace("A", a)); g.addColorStop(1, color.replace("A", 0));
+  ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
+}
+
+// 1. Blood Moon
+function draw1(t, dt) {
+  ctx.fillStyle = "#050103"; ctx.fillRect(0, 0, W, H);
+  for (let i = 0; i < 5; i++) glowCircle(W * (.2 + .6 * ((i * .37 + t * .01 * (i + 1)) % 1)), H * (.15 + .7 * ((i * .61) % 1)),
+                                         Math.min(W, H) * (.35 + .1 * Math.sin(t * .2 + i)), "rgba(120,0,25,A)", .18);
+  const cx = W / 2, cy = H * .3, R = Math.min(W, H) * .17;
+  const amp = S.state === "thinking" ? .03 : .02 + .22 * S.smooth;
+  const size = { idle: .85, wake: 1.05, listening: 1, thinking: .9, speaking: 1 }[S.state];
+  ease.size += (size - ease.size) * dt * 4;
+  glowCircle(cx, cy, R * 2.4, "rgba(224,20,47,A)", .25 + .35 * S.smooth);
+  ctx.beginPath();
+  for (let i = 0; i <= 120; i++) {
+    const a = i / 120 * Math.PI * 2;
+    const k = 1 + amp * (Math.sin(3 * a + t * 2.1) * .5 + Math.sin(5 * a - t * 3.3) * .3 + Math.sin(7 * a + t * 4.7) * .2);
+    const r = R * ease.size * k; i ? ctx.lineTo(cx + r * Math.cos(a), cy + r * Math.sin(a)) : ctx.moveTo(cx + r, cy);
+  }
+  const sw = S.state === "thinking" ? t * 1.5 : t * .3;
+  const g = ctx.createRadialGradient(cx + R * .3 * Math.cos(sw), cy + R * .3 * Math.sin(sw) - R * .2, R * .05, cx, cy, R * 1.1);
+  g.addColorStop(0, "#ffc2c9"); g.addColorStop(.3, "#ff2d4a"); g.addColorStop(.75, "#8e0019"); g.addColorStop(1, "#3a0009");
+  ctx.fillStyle = g; ctx.shadowColor = "#ff1a3d"; ctx.shadowBlur = 60 * D * (.4 + S.smooth); ctx.fill(); ctx.shadowBlur = 0;
+}
+
+// 2. Crimson Glow
+function draw2(t) {
+  ctx.fillStyle = "#040304"; ctx.fillRect(0, 0, W, H);
+  const lift = { idle: .06, wake: .22, listening: .14, thinking: .12, speaking: .14 }[S.state] + .32 * S.smooth;
+  ease.glow += (lift - ease.glow) * .08;
+  const layers = [["#5a0012", 1.0, .9], ["#c4102c", .8, .8], ["#ff4a2e", .55, .65], ["#ffb36b", .3, .45]];
+  for (const [col, hMul, a] of layers) {
+    const top = H - H * ease.glow * hMul * 1.6;
+    ctx.beginPath(); ctx.moveTo(0, H);
+    for (let x = 0; x <= W; x += W / 60) {
+      const shimmer = S.state === "thinking" ? Math.sin(x / W * 12 - t * 6) * H * .02 : 0;
+      ctx.lineTo(x, top + Math.sin(x / W * 6 + t * 1.3 + hMul * 3) * H * .025 + Math.sin(x / W * 13 - t * 2) * H * .012 + shimmer);
+    }
+    ctx.lineTo(W, H); ctx.closePath();
+    const g = ctx.createLinearGradient(0, top - H * .1, 0, H); g.addColorStop(0, col + "00"); g.addColorStop(.5, col);
+    ctx.globalAlpha = a; ctx.fillStyle = g; ctx.filter = `blur(${18 * D}px)`; ctx.fill(); ctx.filter = "none"; ctx.globalAlpha = 1;
+  }
+}
+
+// 3. Arc Reactor
+let bars3 = new Array(72).fill(0);
+function draw3(t, dt) {
+  ctx.fillStyle = "#030203"; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = "rgba(224,20,47,.06)"; ctx.lineWidth = 1;
+  for (let x = 0; x < W; x += 40 * D) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+  for (let y = 0; y < H; y += 40 * D) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+  const cx = W * .35, cy = H * .45, R = Math.min(W, H) * .2;
+  ease.spin += dt * (S.state === "thinking" ? 2.5 : .35);
+  glowCircle(cx, cy, R * 1.8, "rgba(224,20,47,A)", .15 + .3 * S.smooth);
+  ctx.lineWidth = 2 * D;
+  for (let i = 0; i < 120; i++) {                                     // outer ticks
+    const a = i / 120 * Math.PI * 2 + ease.spin * .3, l = i % 10 ? .03 : .07;
+    ctx.strokeStyle = rgba(224, 20, 47, i % 10 ? .35 : .8); ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * R * 1.32, cy + Math.sin(a) * R * 1.32);
+    ctx.lineTo(cx + Math.cos(a) * R * (1.32 - l), cy + Math.sin(a) * R * (1.32 - l)); ctx.stroke();
+  }
+  for (let s = 0; s < 6; s++) {                                       // segmented middle ring
+    const a = s / 6 * Math.PI * 2 - ease.spin; ctx.strokeStyle = rgba(255, 60, 80, .75); ctx.lineWidth = 6 * D;
+    ctx.beginPath(); ctx.arc(cx, cy, R * 1.05, a, a + .7); ctx.stroke();
+  }
+  ctx.lineWidth = 3 * D;                                              // equalizer around the core
+  for (let i = 0; i < bars3.length; i++) {
+    const want = (S.state === "listening" || S.state === "speaking" || S.state === "wake")
+      ? S.smooth * (.4 + .6 * Math.abs(Math.sin(i * 1.7 + t * 9))) : .05;
+    bars3[i] += (want - bars3[i]) * .25;
+    const a = i / bars3.length * Math.PI * 2;
+    ctx.strokeStyle = rgba(255, 90, 110, .5 + bars3[i]); ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(a) * R * .62, cy + Math.sin(a) * R * .62);
+    ctx.lineTo(cx + Math.cos(a) * R * (.64 + bars3[i] * .3), cy + Math.sin(a) * R * (.64 + bars3[i] * .3)); ctx.stroke();
+  }
+  const core = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * .5);
+  core.addColorStop(0, "#fff"); core.addColorStop(.25, "#ff8090"); core.addColorStop(.7, "#e0142f"); core.addColorStop(1, "rgba(224,20,47,0)");
+  ctx.fillStyle = core; ctx.beginPath(); ctx.arc(cx, cy, R * (.42 + .08 * S.smooth + .02 * Math.sin(t * 2)), 0, Math.PI * 2); ctx.fill();
+  ctx.fillStyle = "rgba(255,255,255,.025)";                           // scanlines
+  for (let y = (t * 60 * D) % (4 * D); y < H; y += 4 * D) ctx.fillRect(0, y, W, D);
+}
+
+// 4. Particle Sphere
+const PTS = Array.from({ length: 700 }, (_, i) => {
+  const y = 1 - (i / 699) * 2, r = Math.sqrt(1 - y * y), th = i * 2.39996;
+  return { x: Math.cos(th) * r, y, z: Math.sin(th) * r, j: Math.random() * 6.28 };
+});
+const STARS = Array.from({ length: 220 }, () => ({ x: Math.random(), y: Math.random(), s: Math.random() }));
+function draw4(t, dt) {
+  ctx.fillStyle = "#020104"; ctx.fillRect(0, 0, W, H);
+  for (const s of STARS) { ctx.fillStyle = rgba(255, 220, 230, .15 + .5 * s.s * (.6 + .4 * Math.sin(t + s.x * 50)));
+    ctx.fillRect(((s.x + t * .003 * s.s) % 1) * W, s.y * H, D * (1 + s.s), D * (1 + s.s)); }
+  const cx = W / 2, cy = H * .45, R = Math.min(W, H) * .25;
+  ease.spin += dt * (S.state === "thinking" ? 1.6 : .25);
+  const cosA = Math.cos(ease.spin), sinA = Math.sin(ease.spin), tilt = .35;
+  glowCircle(cx, cy, R * 1.6, "rgba(200,10,40,A)", .12 + .25 * S.smooth);
+  for (const p of PTS) {
+    let x = p.x * cosA + p.z * sinA, z = -p.x * sinA + p.z * cosA, y = p.y;
+    const y2 = y * Math.cos(tilt) - z * Math.sin(tilt); z = y * Math.sin(tilt) + z * Math.cos(tilt); y = y2;
+    let k = 1;
+    if (S.state === "listening") k += .12 * S.smooth * Math.sin(p.y * 8 - t * 9);
+    if (S.state === "speaking" || S.state === "wake") k += .35 * S.smooth * (.5 + .5 * Math.sin(p.j + t * 7));
+    const d = (z + 2) / 3, px = cx + x * R * k, py = cy + y * R * k;
+    ctx.fillStyle = rgba(255, 40 + 120 * (1 - d), 70, .25 + .75 * d);
+    ctx.beginPath(); ctx.arc(px, py, (1 + 2 * d) * D, 0, Math.PI * 2); ctx.fill();
+  }
+}
+
+// 5. Liquid Glass
+const BLOBS = [["#b0001e", .3, .3], ["#5e0a3a", .7, .25], ["#ff3b3b", .55, .7], ["#3a0012", .2, .75], ["#c2185b", .8, .65]];
+let hist5 = new Array(22).fill(0);
+function draw5(t) {
+  ctx.fillStyle = "#0a0206"; ctx.fillRect(0, 0, W, H);
+  const sp = .15 + .5 * S.smooth;
+  BLOBS.forEach(([col, bx, by], i) => {
+    const x = W * (bx + .12 * Math.sin(t * sp + i * 1.3)), y = H * (by + .1 * Math.cos(t * sp * .8 + i));
+    const r = Math.min(W, H) * (.38 + .08 * Math.sin(t * .5 + i) + .12 * S.smooth);
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, col + "cc"); g.addColorStop(1, col + "00");
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+  });
+  hist5.push(S.state === "thinking" ? .15 + .1 * Math.sin(t * 8) : S.smooth); hist5 = hist5.slice(-22);
+  q("#ui5 .bars").innerHTML = hist5.map(v => `<i style="height:${3 + v * 27}px"></i>`).join("");
+}
+
+const DRAW = { 1: draw1, 2: draw2, 3: draw3, 4: draw4, 5: draw5 };
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  step(now / 1000);
+  S.smooth += (S.level - S.smooth) * Math.min(1, dt * 14);
+  DRAW[design](now / 1000, dt);
+  renderText();
+  requestAnimationFrame(frame);
+}
+
+// ---------- menu ----------
+function pick(n) {
+  design = n; lastHTML = "";
+  document.querySelectorAll("#menu [data-d]").forEach(b => b.classList.toggle("on", +b.dataset.d === n));
+  document.querySelectorAll(".ui").forEach(u => u.classList.toggle("on", u.id === "ui" + n));
+  q("#about").textContent = ABOUT[n] + "  (keys 1-5 switch)";
+}
+document.querySelectorAll("#menu [data-d]").forEach(b => b.onclick = () => pick(+b.dataset.d));
+addEventListener("keydown", e => { if (e.key >= "1" && e.key <= "5") pick(+e.key); });
+q("#mic").onclick = async () => {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const ac = new AudioContext(), an = ac.createAnalyser(); an.fftSize = 1024;
+    ac.createMediaStreamSource(stream).connect(an);
+    const buf = new Float32Array(an.fftSize);
+    setInterval(() => { an.getFloatTimeDomainData(buf); let s = 0; for (const v of buf) s += v * v;
+                        micLevel = Math.min(1, Math.sqrt(s / buf.length) * 9); }, 40);
+    q("#mic").classList.add("on"); q("#mic").textContent = "🎤 Mic on (talk during 'Listening')";
+  } catch (e) { q("#mic").textContent = "🎤 Mic not allowed here"; }
+};
+pick(1);
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

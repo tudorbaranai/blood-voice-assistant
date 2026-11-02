@@ -87,7 +87,8 @@ with the device bench (below):
 | [v9](../../prompts/prompt_v9_devices.txt) | Home Assistant's real tool names (`intent__HassTurnOn`, …); check live state before answering; the date rule is only about dates | 51/56, 3.4 s (1.4 s all on the GPU) |
 | [v10](../../prompts/prompt_v10_devices.txt) | "too dark" → lights on, "going to sleep" → off; "(in N days)" in the calendar; rankings allowed; off means `HassTurnOff`, not brightness 0 | 106/112 (run twice) |
 | [v11](../../prompts/prompt_v11_devices.txt) | the hint rules written as exact tool calls; "never promise an action without calling its tool" | 78/90 device cases, 10 lies |
-| [v12](../../prompts/prompt_v12_devices.txt) ✅ | one worked example for "It's too dark in here" | 105/112 (run twice); **52/56 with `blood-brain`** |
+| [v12](../../prompts/prompt_v12_devices.txt) | one worked example for "It's too dark in here" | 105/112 (run twice); **52/56 with `blood-brain`** |
+| [v13](../../prompts/prompt_v13_devices.txt) ✅ | **no clock at all** (see the box below); "dim"/"brighter" without a number = about half / one and a half times the current brightness | 63/70 on the bigger 70-case bench; relative dimming 3/3 |
 
 Every run, with what it shows: [`tests/results/`](../../tests/results/README.md).
 
@@ -106,6 +107,14 @@ Assistant writes the next 4 weeks into the prompt:
 > re-read from scratch: 4–7 s per answer on my laptop (Ollama's log showed only
 > 76 tokens reused). Moving it to the bottom (v5) keeps the long fixed part
 > cached. The calendar changes once a day, so it can stay higher up.
+>
+> **Part two (v13): "the end of the prompt" isn't the end of what the model reads.**
+> The conversation so far comes *after* the instructions. With the voice
+> program (chapter 09) keeping one long conversation, every new minute made
+> Ollama re-read the whole conversation after the clock line: ~2,000 tokens,
+> 12–18 s. Within the same minute: ~1 s. So v13 has **no clock at all**. Home
+> Assistant answers "what time is it?" by itself, without the brain, and the
+> voice program starts a fresh conversation after 2 minutes of silence.
 
 ## How good is it? (my bench, `qwen3:4b-instruct`)
 [`tests/compare-brains.ps1`](../../tests/compare-brains.ps1) with
@@ -120,7 +129,7 @@ What still fails with v6, and why:
 - The bat-and-ball puzzle and counting the R's in "strawberry" are limits of a
   4-billion-parameter model.
 - It still sometimes adds Korean letters next to a pronunciation. The plan is to fix
-  that **in code**: the voice program (chapter 09, planned) will strip non-English
+  that **in code**: the voice program (chapter 09) strips non-English
   characters before speaking.
 
 Once devices were connected, the trick questions weren't enough, so
@@ -148,5 +157,7 @@ unambiguous. Good device **names** matter more than prompt wording.
 | "Failed to connect" adding Ollama | never pinned down (probably a typo, or right after a reboot) | retried `http://10.0.2.2:11434`, worked |
 | Model 36% on the CPU | Home Assistant's agent used context **8192** | Context window size **4096** → 27%; later `blood-brain` put it all on the GPU (step 5) |
 | 4–7 s per answer | clock at the top broke the prompt cache | v5: clock at the end |
+| 12–18 s per answer by voice, every time the minute changed | the clock (even at the end) sits before the conversation, and the voice program kept one long conversation | v13: no clock; fresh conversation after 2 min of silence (chapter 09) |
+| The agent was suddenly on the plain `qwen3:4b-instruct` again (28% on the CPU) | probably reset when I deleted unused models | `ollama ps` shows which model is loaded; pick `blood-brain` again in the agent's settings |
 | "Prefer handling commands locally" was off | likely reset when the assistant was renamed or recreated | check it after any change to the assistant |
 | Temperature experiments | 0.2 vs the default (0.6–0.7) made no real difference: 106/112 on the bench either way | `blood-brain` uses 0.2 for steadier answers |

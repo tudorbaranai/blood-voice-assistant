@@ -16,6 +16,10 @@ max_seconds = 15.0                # never record longer than this
 speech_threshold = 0.5            # how sure the speech detector must be (0..1)
 forget_after = 120                # seconds of silence after which Blood starts a fresh conversation
 
+[screen]
+enabled = false                   # the full-screen window that pops up on "Hey Blood" (off until the design is chosen)
+hide_after = 10                   # seconds after Blood finishes before it hides again
+
 [heard_fixes]
 # Words the ear often writes wrong -> what you meant. Add your own.
 "bedlights" = "bed lights"

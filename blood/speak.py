@@ -73,12 +73,32 @@ async def render(text, voice):
     return np.concatenate(parts), rate
 
 
-def play(samples, rate, volume=1.0):
-    """Play a ready-made int16 array and wait until it's finished."""
-    sd.play((samples * volume).astype(np.int16), rate, blocking=True)
+BLOCK = 1024                                      # ~46 ms of audio per piece we write
 
 
-async def say(text, voice, volume=1.0):
+def loudness(samples):
+    """0 (silence) .. 1 (very loud), for the screen's orb."""
+    rms = float(np.sqrt(np.mean(samples.astype(np.float64) ** 2))) if len(samples) else 0.0
+    return min(1.0, rms / 6000)
+
+
+async def _write(stream, samples, volume, on_level):
+    loop = asyncio.get_running_loop()
+    samples = (samples * volume).astype(np.int16)
+    for i in range(0, len(samples), BLOCK):
+        block = samples[i:i + BLOCK]
+        if on_level:
+            on_level(loudness(block))
+        await loop.run_in_executor(None, stream.write, block)            # waits while it plays
+
+
+async def play(samples, rate, volume=1.0, on_level=None):
+    """Play a ready-made int16 array (the greeting) and wait until it's finished."""
+    with sd.OutputStream(samplerate=rate, channels=1, dtype="int16") as stream:
+        await _write(stream, samples, volume, on_level)
+
+
+async def say(text, voice, volume=1.0, on_level=None):
     """Stream Piper's audio to the speakers as it arrives."""
     loop = asyncio.get_running_loop()
     stream = None
@@ -87,8 +107,7 @@ async def say(text, voice, volume=1.0):
             if stream is None:
                 stream = sd.OutputStream(samplerate=rate, channels=1, dtype="int16")
                 stream.start()
-            samples = (np.frombuffer(audio, np.int16) * volume).astype(np.int16)
-            await loop.run_in_executor(None, stream.write, samples)   # waits while it plays
+            await _write(stream, np.frombuffer(audio, np.int16), volume, on_level)
     finally:
         if stream is not None:
             await loop.run_in_executor(None, stream.stop)               # let the last bit finish

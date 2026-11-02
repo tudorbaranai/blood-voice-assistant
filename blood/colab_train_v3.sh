@@ -1,23 +1,61 @@
 #!/bin/bash
-# Retrain "hey blood" again, this time with the real voice clips CUT so the
-# phrase ends right at the end of each clip (openWakeWord assumes that: it
-# labels the END of a clip as "the wake word"). v2 skipped this and learned the
-# silence after the phrase instead.
-# Run in the same Colab runtime after colab_train_v2.sh (reuses its synthetic
-# clips, config and the uploaded my_voice_train.zip):
-#   nohup bash colab_train_v3.sh > v3.log 2>&1 &
+# Train "hey blood" on Google Colab: computer voices + your own recordings.
+# Each of your clips is CUT so it ends 0.15 s after the phrase: openWakeWord
+# labels the END of a clip as "the wake word". v2 skipped the cut and learned
+# the silence after the phrase instead (worse than v1, see docs/tutorial/09).
+#
+# Before: run the notebook's step 1 and step 2 with the fixes from
+# docs/tutorial/09 (Part 1), and upload two files to /content (the folder
+# panel on the left): this script and my_voice_train.zip (from blood/pack_voice.py).
+# Then run it in the background and look at the log now and then:
+#   !nohup bash colab_train_v3.sh > v3.log 2>&1 &
+#   !tail -5 v3.log
+# About 2 hours on a T4. Result: /content/hey_blood_v3.onnx (one file, ready to download).
 set -e
 cd /content
 export TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD=1
-D=my_custom_model/hey_blood_v2
+NAME=hey_blood_v3
+D=my_custom_model/$NAME
 
-echo "== [1/4] remove the badly cut real clips from v2"
+echo "== [1/6] patch torch_audiomentations for new torchaudio"
+python - <<'PY'
+import os, importlib.util
+# find the file WITHOUT importing the library (importing it is what crashes)
+p = os.path.join(importlib.util.find_spec("torch_audiomentations").submodule_search_locations[0], "utils", "io.py")
+s = open(p).read()
+s = s.replace('torchaudio.set_audio_backend("soundfile")', "pass")
+s = s.replace("torchaudio.info(file_path)",
+              "__import__('types').SimpleNamespace(num_frames=__import__('soundfile').info(str(file_path)).frames,"
+              " sample_rate=__import__('soundfile').info(str(file_path)).samplerate)")
+open(p, "w").write(s)
+print("patched", p)
+PY
+
+echo "== [2/6] write training config"
+python - <<'PY'
+import yaml
+c = yaml.safe_load(open("openwakeword/examples/custom_model.yml"))
+c.update({
+    "target_phrase": ["hey blood"], "model_name": "hey_blood_v3",
+    "n_samples": 30000, "n_samples_val": 3000, "steps": 30000,
+    "target_accuracy": 0.5, "target_recall": 0.25,
+    "output_dir": "./my_custom_model", "max_negative_weight": 1000,
+    "background_paths": ["./audioset_16k", "./fma"],
+    "false_positive_validation_data_path": "validation_set_features.npy",
+    "feature_data_files": {"ACAV100M_sample": "openwakeword_features_ACAV100M_2000_hrs_16bit.npy"},
+})
+yaml.dump(c, open("v3.yaml", "w"))
+print(c)
+PY
+
+echo "== [3/6] computer voices (skipped if they already exist)"
+python openwakeword/openwakeword/train.py --training_config v3.yaml --generate_clips 2>&1 | grep -v DEBUG | tail -5
+
+echo "== [4/6] cut each of your clips so it ends 0.15 s after the phrase, copy 15x"
 rm -f $D/positive_train/real_* $D/negative_train/real_*
 rm -rf my_voice && unzip -o -q my_voice_train.zip -d my_voice
-
-echo "== [2/4] cut each real clip so it ends 0.15 s after the phrase, copy 15x"
-python - <<'PY'
-import pathlib, shutil, wave
+D=$D python - <<'PY'
+import os, pathlib, shutil, wave
 import numpy as np
 
 SR, FRAME = 16000, 320          # 20 ms energy frames
@@ -32,7 +70,7 @@ def phrase_end(a):
         j += 1
     return (j + 1) * FRAME
 
-D = pathlib.Path("my_custom_model/hey_blood_v2")
+D = pathlib.Path(os.environ["D"])
 for spot in ["desk", "bed", "far"]:
     for f in sorted(pathlib.Path("my_voice", spot).glob("*.wav")):
         with wave.open(str(f)) as w:
@@ -48,12 +86,12 @@ for f in sorted(pathlib.Path("my_voice", "talk").glob("*.wav")):
 PY
 echo "positive_train: $(ls $D/positive_train | wc -l)  negative_train: $(ls $D/negative_train | wc -l)"
 
-echo "== [3/4] augment (noise + echo) and compute features"
+echo "== [5/6] augment (noise + echo) and compute features"
 rm -f $D/*_features_*.npy
-python openwakeword/openwakeword/train.py --training_config v2.yaml --augment_clips 2>&1 | grep -v -E "DEBUG|Warning|warn" | tail -8
+python openwakeword/openwakeword/train.py --training_config v3.yaml --augment_clips 2>&1 | grep -v -E "DEBUG|Warning|warn" | tail -8
 
-echo "== [4/4] train"
-python openwakeword/openwakeword/train.py --training_config v2.yaml --train_model 2>&1 | grep -v -E "DEBUG|Warning|warn|onnx_ir|onnxscript" | tail -12 || true
-python -c "import onnx; m=onnx.load('my_custom_model/hey_blood_v2.onnx'); onnx.save(m,'hey_blood_v3.onnx'); print('MERGED')"
+echo "== [6/6] train, then merge the model into one file"
+python openwakeword/openwakeword/train.py --training_config v3.yaml --train_model 2>&1 | grep -v -E "DEBUG|Warning|warn|onnx_ir|onnxscript" | tail -12 || true
+python -c "import onnx; m=onnx.load('my_custom_model/hey_blood_v3.onnx'); onnx.save(m,'hey_blood_v3.onnx'); print('MERGED')"
 ls -la hey_blood_v3.onnx
 echo "ALL DONE"

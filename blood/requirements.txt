@@ -1,0 +1,5 @@
+openwakeword  # the wake word, and the speech detector (Silero VAD) that knows when you stop talking
+sounddevice   # microphone and speakers
+numpy         # handles the audio samples
+websockets    # talks to Home Assistant's Assist (and feeds the screen)
+wyoming       # talks to Piper, the voice (same "cable" Home Assistant uses)

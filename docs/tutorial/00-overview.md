@@ -7,9 +7,9 @@
 - every piece is open source and replaceable.
 
 You ask a question or give a command ("turn off the bedroom light") and it
-answers through your speakers. Today you talk to it through Home Assistant's
-Assist, in the browser. The goal is a wake word: you say *"Hey Blood"*, it
-answers *"Yes?"*, no browser needed *(planned, chapter 09)*.
+answers through your speakers. You say *"Hey Blood"*, it answers *"Yes,
+Tudor?"*, and you talk. No browser needed: a small program on the laptop
+listens all the time (chapter 09). You can also type to it in Home Assistant.
 
 > The project started under the name "Jarvis", which is why the first test
 > scripts, the speech-to-text test sentences and some old results still use it.
@@ -27,7 +27,7 @@ answers *"Yes?"*, no browser needed *(planned, chapter 09)*.
 
 | # | Job | What I use | Where it runs |
 |---|---|---|---|
-| 1 | Hear "Hey Blood" | openWakeWord, custom model *(planned, chapter 09)* | Windows, my own small program |
+| 1 | Hear "Hey Blood" | openWakeWord, a model I trained myself (chapter 09) | Windows, my own small program |
 | 2 | **Ear**: speech → text | **Parakeet** (via Home Assistant's Whisper add-on) | Home Assistant VM |
 | 3 | **Brain**: understand and answer | **Ollama** + `qwen3:4b-instruct`, with my own instructions ("prompt") | Windows, on the graphics card |
 | 4 | **Voice**: text → speech | **Piper**, voice `en_US-libritts_r-medium` | Home Assistant VM |
@@ -117,8 +117,8 @@ Each chapter explains its own decision in more detail.
 | 06 | [The voice: text-to-speech](06-voice-text-to-speech.md) | ✅ |
 | 07 | [Bluetooth into the VM](07-bluetooth-passthrough.md) | ✅ (optional) |
 | 08 | [Lights and plugs](08-lights-and-plugs.md) | ✅ |
-| 09 | [Wake word and my own voice program](09-wake-word-and-voice-program.md) | ⬜ planned |
-| 10 | [The screen](10-screen.md) | ⬜ planned |
+| 09 | [Wake word and my own voice program](09-wake-word-and-voice-program.md) | ✅ (wake word v3 still to test) |
+| 10 | [The screen](10-screen.md) | 🟡 choosing the design |
 | 11 | [Maintenance and troubleshooting](11-maintenance-and-troubleshooting.md) | ✅ (grows over time) |
 
 Every chapter follows the same shape: **Goal → Why → Steps → Check it worked →

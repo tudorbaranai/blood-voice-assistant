@@ -62,10 +62,12 @@ the list to your own name and run:
 ```powershell
 .venv\Scripts\python.exe tests\tts\name_test.py en_US-libritts_r-medium
 ```
-Listen to `tests/tts/names/`. In my case the phoneme version
-`[[ tˈuːdoːɾ ]]` came closest. The voice program (chapter 09) will swap the
-name for its phonemes just before speaking, while the screen still shows the
-normal spelling.
+Listen to `tests/tts/names/`. With the Ryan voice, `[[ tˈuːdoːɾ ]]` came
+closest. With libritts_r none of the first eight was right, so a second round
+aimed at Romanian sounds (`name_test.py en_US-libritts_r-medium 2`) found
+`[[ tˈudor ]]`: short u, short o, rolled r. The voice program (chapter 09)
+swaps the name for its phonemes just before speaking, while the screen still
+shows the normal spelling.
 
 ## Check it worked
 Assist chat bubble → 🎤 → ask something. You hear the answer. In **Debug**,

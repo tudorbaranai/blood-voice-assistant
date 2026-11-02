@@ -1,4 +1,6 @@
 #!/bin/bash
+# !! Superseded by colab_train_v3.sh. Kept as a record: this version mixes the
+# !! recordings in UNCUT, which made the model worse than v1 (docs/tutorial/09).
 # Retrain "hey blood" on Google Colab with the owner's real voice mixed in.
 # Run AFTER the notebook's step 1 + step 2 (and their fixes) have finished,
 # and after my_voice_train.zip was uploaded to /content.

@@ -34,6 +34,29 @@ What the table shows:
 - **Temperature 0.2 didn't change the score** (106/112 either way). blood-brain
   uses it anyway for steadier answers.
 
+## Brain bench, 70 cases (2 Nov 2026)
+
+14 new cases: relative dimming ("a little", "a bit brighter"), Star Wars and
+history details (Sifo-Dyas, Hannibal), "say it three times", and how to say
+hello in Chinese. "x2" = every case ran twice.
+
+| Run | Model | Prompt | Passed | Lies | Avg answer |
+|---|---|---|---|---|---|
+| [blood-brain x2](bench-M-blood-brain-2026-11-02_13-03.md) | `blood-brain` | v12 | **123/140** | 7 | **1.3 s** |
+| [qwen3.5:4b x2](bench-M-qwen3.5-4b-2026-11-02_13-07.md) | `qwen3.5:4b` | v12 | 116/140 | 2 | 3.4 s |
+| [ministral-3:3b x2](bench-M-ministral-3-3b-2026-11-02_13-23.md) | `ministral-3:3b` | v12 | 97/140 | 5 | 1.9 s |
+| [v13](bench-v13-2026-11-02_21-01.md) | `qwen3:4b-instruct` | **v13** | 63/70 | 2 | 1.4 s |
+
+What the table shows:
+- **`qwen3.5:4b` lies less and handles hints better** (7/8 vs 3/8), but it's
+  2.5× slower and worse at "turn on the TV"-style missing devices (6/10 vs
+  10/10). For a voice, speed won: Blood stays on `blood-brain`.
+- **`ministral-3:3b` fails half the plain on/off commands** (11/22): it sent
+  device names in a form Home Assistant rejects.
+- **v13 removes the clock** (it made voice answers slow, see chapter 04) and
+  makes "dim" clearly darker: relative dimming 3/3. Its two lies are the same
+  hint cases v12 fails.
+
 ## Earlier benches
 
 | File | Bench | What it tested |

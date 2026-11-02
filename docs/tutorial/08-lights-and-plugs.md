@@ -182,7 +182,7 @@ Good names matter more than prompt wording for small models:
 5. **Settings → Voice assistants → Expose**: expose **only** your lights and plugs.
    Anything not exposed is invisible to Blood.
 6. Then switch the conversation agent to **Control Home Assistant: Assist** and
-   use the device-aware prompt [`prompts/prompt_v12_devices.txt`](../../prompts/prompt_v12_devices.txt)
+   use the device-aware prompt [`prompts/prompt_v13_devices.txt`](../../prompts/prompt_v13_devices.txt)
    with the `blood-brain` model (chapter 04).
 
 Test sentences (check *Voice assistants → ⋮ → Debug* each time):
