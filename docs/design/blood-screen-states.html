@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Blood screen states</title>
+<style>
+  :root {
+    --page: #f3efe6;
+    --ink: #1a1816;
+    --muted: #5d5850;
+    --line: #d6cfc1;
+    --night: #0e0d0c;
+    --night-text: #e9e3d7;
+    --blood: #a3131f;
+    --paper: #ebe3d2;
+    --paper-text: #1b1a17;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 16px/1.55 "Segoe UI", system-ui, sans-serif;
+  }
+  main { width: 1600px; padding: 48px 56px 56px; }
+  h1 { font: 600 40px/1.1 Georgia, "Yu Mincho", serif; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h1 span { color: var(--blood); }
+  .sub { color: var(--muted); margin: 0 0 28px; font-size: 17px; }
+
+  .flow { display: flex; align-items: center; gap: 10px; margin: 0 0 8px; flex-wrap: wrap; }
+  .flow b {
+    font-weight: 600; font-size: 15px; padding: 7px 14px; border-radius: 4px;
+    background: var(--night); color: var(--night-text);
+  }
+  .flow i { font-style: normal; color: var(--muted); }
+  .loop { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
+  .loop b { color: var(--blood); }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 170px 250px 1fr 1fr 300px;
+    border-top: 2px solid var(--ink);
+  }
+  .grid > div { padding: 16px 18px; border-bottom: 1px solid var(--line); }
+  .head { font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .head.b { background: var(--night); color: var(--night-text); }
+  .head.v { background: var(--paper); color: var(--paper-text); }
+  .state { font: 600 21px/1.2 Georgia, "Yu Mincho", serif; }
+  .state small { display: block; font: 400 13px/1.4 "Segoe UI", sans-serif; color: var(--muted); margin-top: 4px; }
+  .sends { font: 13.5px/1.5 Consolas, "Cascadia Mono", monospace; color: var(--muted); }
+  .b { background: var(--night); color: var(--night-text); border-bottom-color: #2a2725 !important; }
+  .b em { font-style: normal; color: #e0414d; }
+  .v { background: var(--paper); color: var(--paper-text); border-bottom-color: #d4c9b3 !important; }
+  .note { font-size: 14px; color: var(--muted); }
+
+  .bottom { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; margin-top: 40px; }
+  h2 { font: 600 22px/1.2 Georgia, "Yu Mincho", serif; margin: 0 0 12px; }
+  ol, ul { margin: 0; padding-left: 22px; }
+  li { margin-bottom: 7px; }
+  .pick { margin-top: 28px; padding: 16px 20px; border-left: 4px solid var(--blood); background: #ece5d6; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Blood <span>·</span> screen states</h1>
+  <p class="sub">A full-screen window that pops up on "Hey Blood". Each state needs its own animation, in a Berserk or Vagabond manga style. These are ideas to design from, not final decisions.</p>
+
+  <div class="flow">
+    <b>1 wake</b><i>→</i><b>2 greeting</b><i>→</i><b>3 listening</b><i>→</i><b>4 thinking</b><i>→</i><b>5 speaking</b><i>→</i><b>6 closing</b>
+  </div>
+  <p class="loop">One conversation in order. Saying <b>"Hey Blood"</b> again jumps back to wake from any state, so every animation must be interruptible.</p>
+
+  <div class="grid">
+    <div class="head">State</div>
+    <div class="head">What Blood sends the screen</div>
+    <div class="head b">Berserk idea · black ground, pen hatching, crimson</div>
+    <div class="head v">Vagabond idea · paper, wet sumi brush, calm</div>
+    <div class="head">Note</div>
+
+    <div class="state">1 Wake<small>"Hey Blood" heard</small></div>
+    <div class="sends">state = "wake"</div>
+    <div class="b">Impact frame: the screen flashes inverted for two frames, then a <em>crimson ink splash</em> bursts from the centre and settles into Blood's own sigil.</div>
+    <div class="v">One brush stroke draws an ensō circle in half a second, wet ink bleeding at the end of the stroke.</div>
+    <div class="note">Must read from across the room in half a second. This is the moment that says "it heard me".</div>
+
+    <div class="state">2 Greeting<small>Blood says "Yes, Tudor?"</small></div>
+    <div class="sends">state = "speaking"<br>+ level (Blood's voice, 0–1)</div>
+    <div class="b">The sigil opens like an eye; its <em>crimson core pulses</em> with Blood's voice level.</div>
+    <div class="v">The ensō's ink thickens and thins with Blood's voice, like a brush pressed harder and lighter.</div>
+    <div class="note">Same look as speaking, but shorter. Reusing it keeps the visual vocabulary small.</div>
+
+    <div class="state">3 Listening<small>Tudor is talking</small></div>
+    <div class="sends">state = "listening"<br>+ level (Tudor's mic, 0–1)</div>
+    <div class="b">Manga focus lines close in from the screen edges toward the centre. The louder Tudor speaks, the <em>denser and closer</em> they get.</div>
+    <div class="v">Ink drops fall into still water; each syllable sends out a ripple.</div>
+    <div class="note">No words yet: speech is written down only after Tudor stops talking. Only the voice level is known here.</div>
+
+    <div class="state">4 Thinking<small>the brain is working</small></div>
+    <div class="sends">state = "thinking"<br>+ heard (Tudor's words)</div>
+    <div class="b">Tudor's words land in a round white speech balloon. Cross-hatching slowly builds up around the sigil, <em>stroke by stroke</em>.</div>
+    <div class="v">Tudor's words appear brushed on the paper. A single ink drop diffuses slowly in water.</div>
+    <div class="note">Must be the lightest animation: the laptop's hardware is busiest at this moment. Lasts about 1–5 s.</div>
+
+    <div class="state">5 Speaking<small>Blood answers</small></div>
+    <div class="sends">state = "speaking"<br>+ answer (text)<br>+ level (Blood's voice, 0–1)</div>
+    <div class="b">The answer sits in a <em>black balloon with white letters</em> (how manga often marks an inhuman voice). A crimson brush-stroke waveform moves with the voice.</div>
+    <div class="v">The answer is revealed line by line as if brushed. A brush-stroke underline swells with the voice.</div>
+    <div class="note">Brush for effects, a clean readable font for the answer. Answers can be 1–4 sentences; the layout must fit them.</div>
+
+    <div class="state">6 Closing<small>about 10 s after Blood finishes</small></div>
+    <div class="sends">state = "idle", then the window hides</div>
+    <div class="b">The ink <em>drains down the screen</em> like drying blood, then darkness.</div>
+    <div class="v">The ink fades back into the paper; a faint ghost of the ensō remains, then the window hides.</div>
+    <div class="note">A "closing" signal will be added so the exit animation can play before the window hides.</div>
+
+    <div class="state">Extras<small>later</small></div>
+    <div class="sends">not sent yet</div>
+    <div class="b">Light switched on/off: a <em>sword slash</em> across the screen plus a big hand-lettered sound effect. "Didn't catch that": the balloon cracks.</div>
+    <div class="v">Light switched: a quick horizontal stroke, like a cut. "Didn't catch that": the brush skips and splatters.</div>
+    <div class="note">Device done, error, and Blood starting up after a reboot.</div>
+  </div>
+
+  <div class="bottom">
+    <section>
+      <h2>Rules for every state</h2>
+      <ol>
+        <li>Each state has its own clear shape and motion, recognisable from 2–3 m away in half a second. Colour alone is not enough.</li>
+        <li>Every state has an entrance, a loop and an exit, and can be cut off at any moment.</li>
+        <li>The voice level drives the motion, smoothed: reacts fast to louder, settles slowly.</li>
+        <li>Two speeds: drawn elements move at 8–12 frames per second with a slight "line boil"; text and layout move smoothly.</li>
+        <li>Brush style for titles and effects; a clean, readable font for the transcript (like subtitles in Sekiro or Ghost of Tsushima).</li>
+        <li>Leave space empty. Vagabond's power is blank paper, Berserk's is black.</li>
+        <li>Original marks only: no copied manga drawings or symbols. Blood gets its own sigil.</li>
+      </ol>
+    </section>
+    <section>
+      <h2>Fixed facts</h2>
+      <ul>
+        <li>Laptop screen, 1920 × 1080, 144 Hz, full screen, often in a dark room.</li>
+        <li>Viewed from across the room (2–3 m) as often as up close.</li>
+        <li>One local web page (HTML, CSS, JavaScript), no online services.</li>
+        <li>Live updates arrive as small messages: <span class="sends">state</span>, <span class="sends">heard</span>, <span class="sends">answer</span>, <span class="sends">level</span>.</li>
+        <li>Tudor's name is always written "Tudor" on screen.</li>
+      </ul>
+      <div class="pick"><b>Suggested direction:</b> a Berserk base (black and crimson, easy on the eyes at night, fits the name "Blood") that moves like Vagabond (wet brush strokes, ink bleeding).</div>
+    </section>
+  </div>
+</main>
+</body>
+</html>
