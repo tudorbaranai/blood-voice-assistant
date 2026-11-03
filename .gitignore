@@ -38,5 +38,15 @@ docs/how-blood-works.html
 tools/gaming-mode.*
 tools/blood-mode.*
 
-# --- Fan-art screen mockups (use Berserk/Vagabond motifs: not ours to publish) ---
-docs/design/manga-v*/
+# --- Screen mockups: the work files stay on the laptop (renders, stills, old versions,
+#     ~250 MB); the final Eclipse page, its storyboard and the Blender scripts are kept ---
+docs/design/manga-v*/*
+!docs/design/manga-v3/blood-manga-v3.html
+!docs/design/manga-v3/storyboard-eclipse.png
+!docs/design/manga-v3/blender/
+docs/design/manga-v3/blender/models/
+!docs/design/manga-v3/assets/
+docs/design/manga-v3/assets/*
+!docs/design/manga-v3/assets/hand/
+docs/design/manga-v3/assets/hand/*
+!docs/design/manga-v3/assets/hand/hand.blend

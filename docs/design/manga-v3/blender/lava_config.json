@@ -1,0 +1,75 @@
+{
+  "frame": {
+    "w": 1920,
+    "h": 1080,
+    "horizon": 0.78,
+    "region": [
+      0.4,
+      0.76,
+      0.7,
+      1.0
+    ],
+    "vfov_deg": 32.0,
+    "cam_height": 1.0
+  },
+  "course": [
+    [
+      0.638,
+      0.782
+    ],
+    [
+      0.575,
+      0.79
+    ],
+    [
+      0.512,
+      0.802
+    ],
+    [
+      0.488,
+      0.824
+    ],
+    [
+      0.502,
+      0.854
+    ],
+    [
+      0.54,
+      0.898
+    ],
+    [
+      0.566,
+      0.952
+    ],
+    [
+      0.552,
+      1.04
+    ]
+  ],
+  "bank_px": {
+    "base": 7.0,
+    "grow": 20.0,
+    "pow": 1.4
+  },
+  "look": {
+    "crust": "#140302",
+    "melt": "#c84818",
+    "core": "#ffb054",
+    "glow": "#6a1408",
+    "emission": 1.3,
+    "core_emission": 1.8,
+    "crack_scale": 1.7,
+    "crack_width": 0.05,
+    "flow_scale": 1.1,
+    "speed": 1.4,
+    "samples": 64,
+    "ground_glow": 0.0,
+    "crust_emission": 0.25,
+    "centre_width": 0.3,
+    "flow_power": 2.0
+  },
+  "loop": {
+    "frames": 48,
+    "fps": 24
+  }
+}
