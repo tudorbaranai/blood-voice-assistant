@@ -20,16 +20,47 @@ import time
 import tomllib
 import winsound
 
-import numpy as np
-import sounddevice as sd
-from openwakeword.model import Model
-from openwakeword.vad import VAD
-
-from ha import Assist
-from screen import NoScreen, Screen
-from speak import clean, play, render, say
-
 ROOT = pathlib.Path(__file__).resolve().parent.parent
+log = logging.getLogger("blood")
+RETRY_WAIT = 30                           # seconds between tries when starting fails
+
+
+def setup_logging():
+    (ROOT / "logs").mkdir(exist_ok=True)
+    fmt = logging.Formatter("%(asctime)s  %(message)s", "%Y-%m-%d %H:%M:%S")
+    # 1 MB per file, the last 3 kept: it runs for months, the log must not grow forever
+    handlers = [logging.handlers.RotatingFileHandler(ROOT / "logs" / "blood.log", maxBytes=1_000_000,
+                                                     backupCount=3, encoding="utf-8")]
+    if sys.stdout:                     # started hidden (pythonw) = no screen to print to
+        handlers.append(logging.StreamHandler(sys.stdout))
+    for h in handlers:
+        h.setFormatter(fmt)
+        log.addHandler(h)
+    log.setLevel(logging.INFO)
+
+
+# The log starts before anything else, so even a failed start gets written down.
+# Right after login Windows may still be setting up sound and USB, and loading the
+# mic library can fail. Then Blood waits and tries again instead of dying silently.
+setup_logging()
+for attempt in range(1, 11):
+    try:
+        import numpy as np
+        import sounddevice as sd
+        from openwakeword.model import Model
+        from openwakeword.vad import VAD
+
+        from ha import Assist
+        from screen import NoScreen, Screen
+        from speak import clean, play, render, say
+        break
+    except Exception:
+        if attempt == 10:
+            log.exception("Blood couldn't load its parts after 10 tries, giving up.")
+            raise
+        log.exception(f"Blood couldn't load its parts (try {attempt} of 10), trying again in {RETRY_WAIT} s")
+        time.sleep(RETRY_WAIT)
+
 RATE, CHUNK = 16000, 1280                 # 80 ms pieces, what openWakeWord works in
 CHUNK_SECONDS = CHUNK / RATE
 
@@ -41,9 +72,6 @@ PROMISE = re.compile(r"\b(I'll|I will|let me|I'm going to|I need to)\s+(now\s+|f
 
 FILLERS = re.compile(r"\b(uh+|um+|er+|ah+|hmm+|erm)\b[,.]?\s*", re.I)
 WAKE_AGAIN = re.compile(r"^\s*(hey|hi|a)\s+(blood|blud|bud)\b[,.!]?\s*", re.I)
-
-log = logging.getLogger("blood")
-
 
 def tidy_heard(text, fixes):
     """Small fixes to what the ear wrote, so HA's own sentences (and your
@@ -59,20 +87,6 @@ def tidy_heard(text, fixes):
 def mic_level(chunk):
     """How loud you are, 0..1, for the screen's orb (normal speech is about 0.3-0.8)."""
     return min(1.0, float(np.sqrt(np.mean(chunk.astype(np.float64) ** 2))) / 2500)
-
-
-def setup_logging():
-    (ROOT / "logs").mkdir(exist_ok=True)
-    fmt = logging.Formatter("%(asctime)s  %(message)s", "%Y-%m-%d %H:%M:%S")
-    # 1 MB per file, the last 3 kept: it runs for months, the log must not grow forever
-    handlers = [logging.handlers.RotatingFileHandler(ROOT / "logs" / "blood.log", maxBytes=1_000_000,
-                                                     backupCount=3, encoding="utf-8")]
-    if sys.stdout:                     # started hidden (pythonw) = no screen to print to
-        handlers.append(logging.StreamHandler(sys.stdout))
-    for h in handlers:
-        h.setFormatter(fmt)
-        log.addHandler(h)
-    log.setLevel(logging.INFO)
 
 
 def only_one_blood():
@@ -253,12 +267,17 @@ async def main():
 
 
 if __name__ == "__main__":
-    setup_logging()
     lock = only_one_blood()
-    try:
-        asyncio.run(main())
-    except KeyboardInterrupt:
-        log.info("Stopped.")
-    except Exception:
-        log.exception("Blood crashed (Task Scheduler restarts it in a minute)")
-        raise
+    # Task Scheduler only restarts a task that couldn't start, not one that started
+    # and then crashed. So Blood restarts itself (e.g. the mic wasn't there yet).
+    while True:
+        try:
+            asyncio.run(main())
+        except KeyboardInterrupt:
+            log.info("Stopped.")
+            break
+        except Exception:
+            log.exception(f"Blood crashed, starting again in {RETRY_WAIT} s")
+            time.sleep(RETRY_WAIT)
+            sd._terminate()            # look for sound devices again, one may have
+            sd._initialize()           # appeared (or changed) since the last try
