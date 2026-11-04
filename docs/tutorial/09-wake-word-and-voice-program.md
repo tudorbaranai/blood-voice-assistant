@@ -241,7 +241,8 @@ consistently. Then I listened to a few cut clips.
 | [`blood/blood.py`](../../blood/blood.py) | the main loop: wake word → greeting → record → ear → brain → speak |
 | [`blood/ha.py`](../../blood/ha.py) | talks to Home Assistant's Assist over the websocket API: audio in → text, text in → answer |
 | [`blood/speak.py`](../../blood/speak.py) | cleans the answer (emojis, non-Latin letters, markdown, `°C`) and has Piper say it on port 10200, playing while it's still being made |
-| [`blood/settings.toml`](../../blood/settings.toml) | everything you might tune: wake model and threshold, mic, recording timings, voice, name spelling, word fixes |
+| [`blood/screen.py`](../../blood/screen.py), [`screen_live.js`](../../blood/screen_live.js) | the full-screen window that follows the conversation ([chapter 10](10-screen.md)) |
+| [`blood/settings.toml`](../../blood/settings.toml) | everything you might tune: wake model and threshold, mic, recording and follow-up timings, the screen, voice, name spelling, word fixes |
 | `logs\blood.log` | every request: what it heard, what it sent, the answer, the timings (git-ignored: it's what you say) |
 
 ### Steps
@@ -284,6 +285,28 @@ A speech detector (Silero VAD, included in openWakeWord) scores every 80 ms.
   for **1 s**. Before that (one word, or just an echo) it waits up to 2 s, so a
   normal pause before you start doesn't end the recording.
 
+### Talking on without "Hey Blood"
+After each answer Blood listens **5 more seconds** (`follow_up` in
+`settings.toml`, `0` switches it off). If I start talking in that time, it's
+the same conversation: "Turn on the main light" → *"The main light is on."* →
+"make it 100%". The 5 seconds only count until I *start* talking; 2–3 s was too
+short, because the clock starts the moment Blood stops and I need a moment to
+react.
+- **"That's all"**, "stop", "never mind", "no thanks", "thank you, Blood" end
+  the conversation quietly, without asking the brain. "Stop the music" is still
+  a normal request: only the whole sentence counts.
+- If a follow-up hears only noise (often Blood's own echo), it ends quietly.
+  Answering "Sorry, I didn't catch that" there could start Blood answering
+  itself.
+- **A fresh conversation after 6 of my questions** (`fresh_after`). The brain's
+  memory is 4,096 tokens, and it holds the instructions (with the list of my
+  devices) *and* the conversation. In a long chat it filled up around my 17th
+  question: Ollama's log showed `4089 of 4096 … truncated`, every answer took
+  ~29 s instead of 1–2 s, and since the cut starts at the beginning, Blood
+  forgot the bed lights existed ("I don't have any lights in an area called
+  bed"). 6 keeps well clear of that; the price is that it forgets what came
+  before.
+
 ### Making it fast
 The first live test was slow: **12–18 s** from the end of my sentence to the
 answer. Typing the same thing in Home Assistant's chat took 1–2 s. Three causes:
@@ -291,7 +314,7 @@ answer. Typing the same thing in Home Assistant's chat took 1–2 s. Three cause
 | Cause | What I saw | Fix |
 |---|---|---|
 | Home Assistant's agent was set to the plain `qwen3:4b-instruct` | `ollama ps` showed 28% of the model on the CPU | pick `blood-brain` again in the Ollama agent's settings (chapter 04): 100% GPU |
-| **One endless conversation** | the conversation grew to 3,800 of 4,096 tokens | the program starts a **fresh conversation after 2 minutes of silence** (`forget_after`), like the chat window does each time you open it. Follow-ups within 2 minutes still work. |
+| **One endless conversation** | the conversation grew to 3,800 of 4,096 tokens | the program starts a **fresh conversation after 2 minutes of silence** (`forget_after`), like the chat window does each time you open it, and after 6 questions in a row (`fresh_after`, see above). Follow-ups within 2 minutes still work. |
 | **The clock in the prompt, with the conversation after it** | fast within the same minute, 12–18 s every time the minute changed: Ollama's log showed it re-reading ~2,000 tokens at ~140 tokens/s | prompt **v13**: no clock at all. Home Assistant answers "what time is it?" itself, without the brain. The calendar stays (it only changes once a day). |
 | The ear's text didn't match my automation sentences | it wrote "**Uh** close the main light." and "Close the **bedlights**." | the program tidies the text before the brain sees it: drops "uh/um", fixes words from `[heard_fixes]` in `settings.toml` |
 
@@ -314,6 +337,7 @@ Heard: 'Open the bed lights.' -> sent 'Open the bed lights'  ->  Blood: 'The bed
 | 12–18 s answers | endless conversation + the clock, see the table above | fresh conversation, prompt v13 |
 | The dimming "didn't work" | it set 50% when the light was already at 54% | v13: "dim" means about half the current brightness |
 | "Make it brighter **and** blue" → "brighter and blue", only brightness changed | two actions in one sentence is the small model's weak spot | one action per sentence; a known limitation |
+| After ~20 questions in one chat: "I don't have any lights in an area called bed", 29 s per answer | the brain's memory was full, so its instructions were cut | a fresh conversation after 6 questions |
 | It answered "I'll use the live context tool to get this information" and stopped | the model promised instead of acting (a cold start) | the program replies "Go ahead." once to answers that only promise to look something up |
 
 ---
