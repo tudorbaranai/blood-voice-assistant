@@ -118,6 +118,61 @@ class Assist:
         return heard
 
 
+class DeviceWatch:
+    """Listens to Home Assistant for lights and plugs switching on or off, so the
+    screen can show it (the Eclipse: the hand grips the sun when a light goes off).
+
+    It keeps one websocket open in the background and reconnects by itself if HA
+    restarts. Blood switches it on for a request with listen(), off with stop();
+    switches outside that window (the phone app, an automation) are ignored."""
+
+    DOMAINS = ("light.", "switch.", "fan.")
+
+    def __init__(self, on_change, token=None):
+        self.on_change = on_change          # called with (name, "on" | "off")
+        self.token = token or load_token()
+        self.active = False
+        self.recent = {}                    # name -> time shown, so one plug seen as 3 entities shows once
+
+    def listen(self):
+        self.active, self.recent = True, {}
+
+    def stop(self):
+        self.active = False
+
+    async def run(self):
+        while True:
+            try:
+                async with websockets.connect(URL, max_size=None) as ws:
+                    await ws.recv()
+                    await ws.send(json.dumps({"type": "auth", "access_token": self.token}))
+                    if json.loads(await ws.recv()).get("type") != "auth_ok":
+                        return                              # bad token: Assist will report it
+                    await ws.send(json.dumps({"id": 1, "type": "subscribe_events",
+                                              "event_type": "state_changed"}))
+                    async for raw in ws:
+                        self._check(json.loads(raw))
+            except (OSError, websockets.ConnectionClosed):
+                await asyncio.sleep(10)                     # HA is (re)starting
+
+    def _check(self, m):
+        if not self.active or m.get("type") != "event":
+            return
+        data = m["event"].get("data") or {}
+        old, new = data.get("old_state") or {}, data.get("new_state") or {}
+        if not data.get("entity_id", "").startswith(self.DOMAINS):
+            return
+        if new.get("state") not in ("on", "off") or old.get("state") not in ("on", "off"):
+            return
+        if new["state"] == old["state"]:
+            return                                          # only brightness/colour changed
+        name = new.get("attributes", {}).get("friendly_name") or data["entity_id"]
+        if time.monotonic() - self.recent.get(name, -9) < 3:
+            return
+        self.recent[name] = time.monotonic()
+        self.on_change(name, new["state"])
+
+
 async def _demo(text):
     assist = Assist()
     print(f"You:   {text}")

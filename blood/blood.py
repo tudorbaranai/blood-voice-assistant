@@ -50,7 +50,7 @@ for attempt in range(1, 11):
         from openwakeword.model import Model
         from openwakeword.vad import VAD
 
-        from ha import Assist
+        from ha import Assist, DeviceWatch
         from screen import NoScreen, Screen
         from speak import clean, play, render, say
         break
@@ -72,6 +72,9 @@ PROMISE = re.compile(r"\b(I'll|I will|let me|I'm going to|I need to)\s+(now\s+|f
 
 FILLERS = re.compile(r"\b(uh+|um+|er+|ah+|hmm+|erm)\b[,.]?\s*", re.I)
 WAKE_AGAIN = re.compile(r"^\s*(hey|hi|a)\s+(blood|blud|bud)\b[,.!]?\s*", re.I)
+# Said in a follow-up, these end the conversation quietly, without asking the brain.
+GOODBYE = re.compile(r"^(stop|never ?mind|that'?s (all|it)|nothing|no( thanks?| thank you)?|goodbye|bye|"
+                     r"(ok(ay)?,? )?thanks?( you)?,? (that'?s all|blood))$", re.I)
 
 def tidy_heard(text, fixes):
     """Small fixes to what the ear wrote, so HA's own sentences (and your
@@ -133,8 +136,15 @@ class Blood:
         self.assist = Assist()
         self.voice = cfg["voice"]
         self.last_request = 0.0
+        self.exchanges = 0                     # in the current conversation (see fresh_after)
         screen = cfg.get("screen", {})
-        self.screen = Screen(screen.get("hide_after", 10)) if screen.get("enabled", True) else NoScreen()
+        self.screen = (Screen(screen.get("hide_after", 10), screen.get("page", ""), screen.get("design", ""),
+                              clean(self.voice["greeting"]), hotkey=screen.get("hotkey", ""),
+                              kiosk=screen.get("kiosk", True), stay_open=screen.get("stay_open", True))
+                       if screen.get("enabled", True) else NoScreen())
+        # A light or plug switching while Blood handles your request shows on the screen
+        self.devices = DeviceWatch(lambda name, value: self.screen.event("device", name=name, value=value),
+                                   token=self.assist.token)
 
     def spoken(self, text):
         return clean(text, self.voice["your_name"], self.voice["name_spoken"])
@@ -144,16 +154,19 @@ class Blood:
 
     async def start(self):
         await self.screen.start()
+        asyncio.create_task(self.devices.run())
         await self.wait_for_home_assistant()
         self.mic = Mic(self.cfg["mic"]["device"])
         log.info(f"Ready. Listening for '{self.wake_name}' (threshold {self.cfg['wake']['threshold']}). Ctrl+C to stop.")
         while True:
             await self.wait_for_wake_word()
+            self.devices.listen()
             try:
                 await self.handle_request()
             except Exception:                  # never let one bad request stop Blood
                 log.exception("Something went wrong with this request")
                 winsound.Beep(300, 400)        # low beep = "that didn't work"
+            self.devices.stop()
             self.screen.done()
             self.mic.flush()
             self.wake.reset()
@@ -181,28 +194,56 @@ class Blood:
                 return
 
     async def handle_request(self):
-        asyncio.create_task(self.screen.show())             # screen on, window to the front
-        self.screen.send(state="speaking")
+        """"Yes, Tudor?", then one exchange, then more while you keep talking: after
+        each answer Blood listens a few seconds more ([listen] follow_up), so you
+        can go on without saying "Hey Blood" again."""
+        asyncio.create_task(self.screen.show())             # screen on, window to the front ("wake")
         await play(*self.greeting, self.voice["volume"], on_level=self.level)
-        self.screen.send(state="listening")
-        await asyncio.sleep(0.25)                          # the room's echo of "Yes, Tudor?" dies down
-        self.mic.flush()                                   # don't send Blood's own voice
+        wait = self.cfg["listen"]["wait_for_speech"]
+        follow_up = self.cfg["listen"].get("follow_up", 0)
+        first_time = True
+        while True:
+            self.screen.send(state="listening")
+            await asyncio.sleep(0.25)                      # the room's echo of Blood's voice dies down
+            self.mic.flush()                               # don't send Blood's own voice
+            first = await self.wait_for_speech(wait)
+            if first is None:
+                log.info("No speech after the greeting, back to sleep" if first_time
+                         else "No follow-up, back to sleep")
+                return
+            if not await self.exchange(first, follow=not first_time) or not follow_up:
+                return
+            first_time, wait = False, follow_up
+            log.info(f"Listening {follow_up:g} s for a follow-up")
+            self.screen.send(next=True)                    # the screen moves this exchange up, out of the way
 
-        first = await self.wait_for_speech()
-        if first is None:
-            log.info("No speech after the greeting, back to sleep")
-            return
+    async def exchange(self, first, follow=False):
+        """What you said -> HA -> Blood's answer, spoken. Returns False when the
+        conversation should end here (you said goodbye, or home is unreachable)."""
         t0 = time.perf_counter()
         self.recorded = (0.0, 0.0)
         # A long silence = a new topic: start a fresh, short conversation. A long
         # one makes the brain re-read all of it, which is what made it slow.
-        if time.monotonic() - self.last_request > self.cfg["listen"]["forget_after"]:
+        # A long conversation too: the brain's memory (4096 tokens) holds its instructions
+        # AND the conversation; when it's full, the instructions (with your devices) get
+        # cut, and it gets slow (30 s) and confused. So after a few exchanges, start over.
+        listen = self.cfg["listen"]
+        if (time.monotonic() - self.last_request > listen["forget_after"]
+                or self.exchanges >= listen.get("fresh_after", 6)):
+            if self.assist.conversation_id and self.exchanges >= listen.get("fresh_after", 6):
+                log.info(f"{self.exchanges} exchanges in this conversation: starting a fresh one")
             self.assist.conversation_id = None
+            self.exchanges = 0
+        self.exchanges += 1
         heard = said = answer = None
+        unreachable = False
         try:
             heard = await self.assist.transcribe(self.rest_of_speech(first))
             ear = time.perf_counter() - t0
             said = tidy_heard(heard or "", self.cfg.get("heard_fixes", {}))
+            if follow and said and GOODBYE.match(said.rstrip("!.?")):
+                log.info(f"Heard: {heard!r} -> the end of the conversation")
+                return False
             if said:
                 self.screen.send(state="thinking", heard=said)
                 answer = await self.assist.ask_text(said)
@@ -211,24 +252,33 @@ class Blood:
                     answer = await self.assist.ask_text("Go ahead.")
         except Exception as error:                        # HA down, nothing understood, ...
             log.info(f"Problem: {error}")
+            unreachable = isinstance(error, OSError)      # HA (the VM) isn't answering at all
         self.last_request = time.monotonic()
+        if follow and not unreachable and not said:
+            # a follow-up with nothing understood is usually noise or Blood's own echo:
+            # end quietly, or "Sorry, I didn't catch that" could keep answering itself
+            log.info(f"Heard: {heard!r} in a follow-up -> nothing to answer, back to sleep")
+            return False
         if heard is None or not said:
             answer = "Sorry, I didn't catch that."
+            # the screen: a full eclipse when home is unreachable, a flicker when it just didn't understand
+            self.screen.event("error" if unreachable else "nohear")
         log.info(f"Recorded {self.recorded[0]:.1f}s ({self.recorded[1]:.1f}s of it speech)")
         log.info(f"Heard: {heard!r} -> sent {said!r}  ->  Blood: {answer!r}  "
                  f"(ear {ear if heard else 0:.1f}s, total {time.perf_counter() - t0:.1f}s)")
         if answer:
             self.screen.send(state="speaking", answer=clean(answer))      # the screen shows "Tudor"
             await say(self.spoken(answer), self.voice["name"], self.voice["volume"], on_level=self.level)
+        return not unreachable
 
-    async def wait_for_speech(self):
+    async def wait_for_speech(self, seconds):
         """Wait until you start talking. Returns the last ~0.5 s of sound (so the
         start of the first word isn't lost), or None if you said nothing."""
         cfg = self.cfg["listen"]
         before = collections.deque(maxlen=8)
         self.vad.reset_states()
         in_a_row = 0
-        for _ in range(int(cfg["wait_for_speech"] / CHUNK_SECONDS)):
+        for _ in range(int(seconds / CHUNK_SECONDS)):
             chunk = await self.mic.read()
             self.level(mic_level(chunk))
             before.append(chunk)

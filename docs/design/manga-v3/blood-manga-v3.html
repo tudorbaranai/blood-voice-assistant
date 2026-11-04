@@ -533,7 +533,9 @@ const Blood = (() => {
 
   function resize() {
     api.scale = Math.min(window.devicePixelRatio || 1, 1.25);
-    api.W = innerWidth; api.H = innerHeight; api.vmin = Math.min(api.W, api.H);
+    // a window that loads hidden or minimized can report 0 x 0: draw for the screen's size until it's shown
+    api.W = innerWidth || screen.width || 1280; api.H = innerHeight || screen.height || 720;
+    api.vmin = Math.min(api.W, api.H);
     api.canvas.width = Math.round(api.W * api.scale); api.canvas.height = Math.round(api.H * api.scale);
     resetCtx();
     cur?.resize?.(api);
@@ -2959,19 +2961,26 @@ window.BLOOD_HAND = {"px_per_r":128,"w":960,"h":1510,"sun":{"x":480.0,"y":678.22
     const data = window.BLOOD_HAND;
     if (!data || !data.back || !data.back.length || new URLSearchParams(location.search).get("hand") === "off") return null;
     const clip = { meta: data, arm: null, back: [], front: [], ready: false };
-    const pending = [];
+    const all = [];
     const img = e => {
       if (!e) return null;
       const im = new Image();
       im.src = e.src;
-      pending.push((im.decode ? im.decode() : new Promise((ok, no) => { im.onload = ok; im.onerror = no; }))
-        .then(() => true, () => false));
+      all.push(im);
       return im;
     };
+    const decode = im => (im.decode ? im.decode() : new Promise((ok, no) => {
+      if (im.complete && im.naturalWidth) ok(); else { im.onload = ok; im.onerror = no; } })).then(() => true, () => false);
     clip.arm = img(data.arm);
     clip.back = data.back.map(img);
     clip.front = data.front.map(img);
-    clip.promise = Promise.all(pending).then(ok => (clip.ready = ok.every(Boolean)));
+    // A window that loads hidden (Blood's screen spends most of its life hidden) can
+    // fail to decode them: try again every few seconds instead of giving up on the hand.
+    const attempt = tries => Promise.all(all.map(decode)).then(ok => {
+      if (ok.every(Boolean) || tries <= 1) return (clip.ready = ok.every(Boolean));
+      return new Promise(r => setTimeout(r, 4000)).then(() => attempt(tries - 1));
+    });
+    clip.promise = attempt(30);
     // the open hand's highest pixel above the sun (clip px): hidden below the frame at rise 0
     let top = data.back[0].y;
     if (data.arm) top = Math.min(top, data.arm.y);
@@ -3076,8 +3085,8 @@ window.BLOOD_HAND = {"px_per_r":128,"w":960,"h":1510,"sun":{"x":480.0,"y":678.22
       this.errK += (errT - this.errK) * (1 - Math.exp(-dt * (errT > this.errK ? 5 : 2.5)));
       const errK = this.errK;
 
-      // ---- THE HAND (a light was switched): rises, takes the sun, lets go
-      const hand = mtype === "device" && mt < 2.45;
+      // ---- THE HAND (a light was switched OFF): rises, takes the sun, lets go
+      const hand = mtype === "device" && api.moment.value !== "on" && mt < 2.45;
       const rise = hand ? I.ease.out(I.smooth(.04, .6, mt)) * (1 - I.ease.inOut(I.smooth(1.78, 2.3, mt))) : 0;
       const curlP = hand ? I.smooth(.52, 1.0, mt) * (1 - I.smooth(1.6, 1.95, mt)) : 0;
       const grabK = curlP;
