@@ -241,7 +241,7 @@ shape: *Goal → Why → Steps → Check it worked → What went wrong for me.*
 7. [Bluetooth into the VM](docs/tutorial/07-bluetooth-passthrough.md) *(optional)*
 8. [Lights and plugs](docs/tutorial/08-lights-and-plugs.md)
 9. [Wake word and my own voice program](docs/tutorial/09-wake-word-and-voice-program.md): training on Colab with every fix, your own voice, the program, auto-start
-10. [The screen](docs/tutorial/10-screen.md) *(choosing the design)*
+10. [The screen](docs/tutorial/10-screen.md): the Eclipse design, and how its God Hand was made in Blender *(wiring next)*
 11. [Maintenance and troubleshooting](docs/tutorial/11-maintenance-and-troubleshooting.md)
 
 To run the brain bench against your own Ollama (Python 3.9+, no extra
@@ -269,7 +269,8 @@ blood/                   the voice program
   wake_test.py           live mic test: the score of every attempt
   wake_eval.py           score a model on your recordings (--holdout: only the held-back ones)
   colab_train_v3.sh      train "Hey Blood" on Colab with your clips (v2: the version that went wrong)
-  screen*.py/.html       the pop-up screen, and five design candidates (in progress)
+  screen*.py/.html       the pop-up screen, and five early design candidates
+docs/design/manga-v3/    the chosen screen: the Eclipse page, its storyboard, the Blender scripts for the hand
 prompts/                 every version of Blood's instructions, v2 → v13
 tests/
   blood_bench.py         the brain bench: 70 cases, pretend house, lie detector
@@ -305,9 +306,10 @@ The core works and Blood now listens on its own. Next on the list:
 
 - **wake word v3**, trained with my own clips cut the right way, to hear me from
   the bed and across the room
-- **the screen**: a full-screen window that pops up on "Hey Blood" with what I
-  said, the answer, and an orb that moves with the voice. Five designs are
-  waiting for my pick ([chapter 10](docs/tutorial/10-screen.md))
+- **the screen**: the design is chosen and built as a page, the Eclipse, with
+  a God Hand rendered in Blender that grips the sun when a light goes off
+  ([chapter 10](docs/tutorial/10-screen.md)); next is wiring it into the
+  voice program
 - **automations**, the thing I wanted in the first place
 
 ## License

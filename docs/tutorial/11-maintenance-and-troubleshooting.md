@@ -21,6 +21,10 @@
    - no `Ready. Listening…` line since the last boot → the task didn't start:
      Task Scheduler → *Blood - Voice program* → Run, or double-click
      `tools\blood-restart.cmd`
+   - `couldn't load its parts` or `Blood crashed` → the error below it says
+     why; Blood retries by itself every 30 s
+   - not sure if it's the VM? If http://127.0.0.1:8123 opens, the VM is
+     fine and the problem is Blood itself
    - `Waiting for Home Assistant…` → the VM or the Piper add-on isn't up yet
    - `Wake word (score …)` lines appear but it seems deaf afterwards → read the
      `Heard:` line: what the ear got, what was sent, and the timings

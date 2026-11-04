@@ -322,8 +322,9 @@ Heard: 'Open the bed lights.' -> sent 'Open the bed lights'  ->  Blood: 'The bed
 
 1. **Task Scheduler** task *"Blood - Voice program"*: at login (+45 s, after
    the VM), runs `.venv\Scripts\pythonw.exe blood\blood.py`. `pythonw` is
-   Python without a window. No time limit; restarts after 1 minute if it stops.
-   Same idea as the VM's task in chapter 03. In PowerShell (no admin needed):
+   Python without a window. No time limit. The "restart every minute" setting
+   only helps if the task can't start at all, **not** if Python starts and then
+   crashes, so Blood restarts itself (point 2). Same idea as the VM's task in chapter 03. In PowerShell (no admin needed):
    ```powershell
    $root = "D:\path\to\this\repo"
    $action = New-ScheduledTaskAction -Execute "$root\.venv\Scripts\pythonw.exe" -Argument "`"$root\blood\blood.py`"" -WorkingDirectory $root
@@ -334,6 +335,12 @@ Heard: 'Open the bed lights.' -> sent 'Open the bed lights'  ->  Blood: 'The bed
    ```
 2. The program is built to run unattended:
    - **waits for Home Assistant** after a reboot (checks every 10 s) instead of crashing
+   - **starts its log first, then loads its parts**, and if loading fails it
+     waits 30 s and tries again (up to 10 times). Right after login, Windows can
+     still be setting up sound and USB: one morning the mic library failed to
+     load, and Blood died before writing a single line, so the log looked fine
+     and Blood was just deaf
+   - **restarts itself after a crash** (30 s later), looking for sound devices again
    - **only one copy at a time** (a second one sees the first and quits)
    - a failed request gives a **low beep**, gets logged, and it keeps listening
    - the log is capped at 3 files of ~1 MB

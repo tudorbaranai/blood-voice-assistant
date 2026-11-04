@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "blood-manga",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "47290", "--bind", "127.0.0.1", "--directory", "docs/design"],
+      "port": 47290
+    }
+  ]
+}

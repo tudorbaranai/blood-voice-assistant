@@ -1,7 +1,8 @@
-# 10 · The screen 🟡 designing
+# 10 · The screen 🟡 designed, not yet wired in
 
-> This chapter is in progress: the design is being chosen. It will be rewritten
-> with the real steps once it's built.
+> The design is chosen and built as a page (the **Eclipse**, below). What is left
+> is the wiring: teaching the voice program to send the page the moments it reacts
+> to. This chapter will get the real steps when that is done.
 
 ## Goal
 A full-screen window on the laptop showing **what you said** (so you can check
@@ -38,3 +39,89 @@ to your own voice:
 The plumbing ([`blood/screen.py`](../../blood/screen.py)) exists but is
 switched off (`[screen] enabled = false` in `settings.toml`) until the chosen
 design is built: in my first test the window didn't come to the front yet.
+
+## The design I chose: the Eclipse
+
+After the five sci-fi candidates I went another way: manga. Four animated
+designs were drawn in plain canvas (a river, an ensō, an eclipse, the Brand),
+and the **Eclipse** won: a black sun over a crimson valley, the sky a slow
+whirlpool, the corona leaning in while you talk and flaring while Blood talks.
+When Blood switches a light off, a colossal hand rises out of the ground and
+grips the sun; while it holds, the sky fills with screaming souls.
+
+The final page is one offline file:
+[`docs/design/manga-v3/blood-manga-v3.html`](../design/manga-v3/blood-manga-v3.html).
+Open it in a browser, press **3** for the Eclipse, **←/→** to step through the
+pretend conversation (the hand plays about 6.4 s in), **🎤 Use my mic** to make
+it react to you. Add `?at=7.5` to the address for a frozen still of any moment.
+[`storyboard-eclipse.png`](../design/manga-v3/storyboard-eclipse.png) shows the
+whole conversation in sixteen frames.
+
+It leans on Berserk's imagery (the Eclipse, the God Hand); that is why it lives
+under `docs/design/` as fan art and not in `blood/`.
+
+## How the God Hand was made (Blender, driven by Claude)
+
+The first hands were drawn with canvas shapes and never stopped looking like
+boxes and tubes. A real hand needed a real 3D model, so the hand is
+**pre-rendered in Blender** and the page only plays the frames. Here is the
+chain, in the order it was built; everything in it is free.
+
+**1. Claude inside Blender.** Blender 5.2 ran on the laptop with the
+*MCP for Blender* add-on, which lets Claude Code run Python inside the live
+Blender, look through its camera, and try again. Every step below was done
+that way, with me approving the stills between rounds. The scripts it wrote
+are in [`docs/design/manga-v3/blender/`](../design/manga-v3/blender/).
+
+**2. A hand with real anatomy.** The mesh comes from **MakeHuman**, through its
+Blender add-on MPFB (installed from Blender's own extensions site; the human it
+makes is CC0). It builds a whole rigged person; a mask by bone weights keeps
+only the right forearm and hand. MakeHuman's shape targets made the fingers
+thicker, the forearm shorter and more muscular, the wrist narrower; a small
+shape key swells the mounds of the palm. The skin is near-black with a crimson
+subsurface glow, plus aged-skin wrinkles and pores as a bump.
+
+**3. Where the sun is.** One Blender unit is the sun's radius. The camera is
+solved so the sun lands on a known pixel, and the hand is placed by its knuckle
+line and scaled by its knuckle span. The page then draws the frames with the
+same rule: scale = the sun's radius on screen divided by the sun's radius in
+the render. That is why the hand sits on the sun at any window size.
+
+**4. A grab, not a fist.** Each finger is posed by geometry: it runs straight
+from its knuckle to the ball, then curls along a circle around it, each finger
+in its own plane so they stay apart; the pinky and the thumb hook the sides,
+the three middle fingers come over the top. The thumb presses in where its
+wrap is capped. The order the fingers close in is the page's own choreography
+(ring first, index last, thumb from a quarter of the way), so one number, how
+closed the grip is, selects a frame.
+
+**5. Two layers.** The palm hangs behind the sun; the fingers come in front
+of it. The hand is rendered twice: the whole hand, drawn under the black disc,
+and only what lies nearer than the sun's plane (a camera-only holdout plane
+cuts everything behind it), drawn over the disc and the corona. That is how the
+fingers close over the light.
+
+**6. Light.** A ring of fire where the sun is (invisible to the camera), two
+rim lights behind, a broad dim sky glow, a warm touch from below, and one faint
+crimson light from the viewer's side so the forms read. Nothing frontal and
+bright: the hand stays a silhouette with burning edges.
+
+**7. Frames into the page.** Twenty-four poses from open to gripped, two layers
+each, rendered with Cycles on the GTX 1650 Ti (about sixteen minutes), packed
+to WebP by Blender's own Python (no extra tools), and embedded in the page as
+data URLs, about 1 MB in total. Stills work because the page waits for the
+frames before it draws.
+
+**8. The souls.** Page-side canvas: twelve screaming skulls drawn once in ink
+onto a sprite sheet, and 170 souls whose places are a pure function of the
+moment's age, born behind the hand and flying up and outward. With everything
+on screen a frame costs about 1.7 ms.
+
+**9. Taken out.** The lava road on the valley floor and the thread of blood
+from the sun to the ground. Both still exist behind a switch at the top of the
+design file.
+
+To re-render the hand after changing a number in `hand_config.json`:
+`blender\make_hand.ps1` (renders, packs, rebuilds the page, re-shoots the
+stills). It needs Blender at `D:\Blender` and the saved scene
+`assets/hand/hand.blend`, which stays on the laptop.
