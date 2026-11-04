@@ -9,16 +9,24 @@ device = ""                       # empty = the Windows default microphone
 
 [listen]
 wait_for_speech = 5.0             # seconds to start talking after "Yes, Tudor?" (else go back to sleep)
+follow_up = 5.0                   # after each answer, seconds to start talking again without "Hey Blood" (0 = off)
 silence_to_stop = 1.0             # this much quiet after you talk = you're done
 min_speech = 0.4                  # after this much speech, a short pause means you're done...
 silence_if_short = 2.0            # ...before that (one word, or just an echo), wait this long
 max_seconds = 15.0                # never record longer than this
 speech_threshold = 0.5            # how sure the speech detector must be (0..1)
-forget_after = 120                # seconds of silence after which Blood starts a fresh conversation
+fresh_after = 6                   # after this many of your questions, start a fresh conversation (a full memory = slow + confused)
+forget_after = 120               # seconds of silence after which Blood starts a fresh conversation
 
 [screen]
-enabled = false                   # the full-screen window that pops up on "Hey Blood" (off until the design is chosen)
-hide_after = 10                   # seconds after Blood finishes before it hides again
+enabled = true                    # the full-screen window that pops up on "Hey Blood"
+hide_after = 10                   # seconds after Blood finishes before the closing animation (~2.5 s) starts
+stay_open = true                  # true = afterwards the window stays, just black (Alt+Tab away); false = it hides
+page = "docs/design/manga-v3/blood-manga-v3.html"   # empty = the plain red orb (blood/screen.html)
+design = "eclipse"                # which design on that page (it also has river, enso, brand)
+kiosk = true                      # true = really full screen, no title bar or buttons (false = a normal app window)
+hotkey = "ctrl+alt+b"             # brings the screen up / puts it away, from anywhere ("" = none)
+                                  # in the screen, Esc or F9 puts it away (minimized, still in Alt+Tab)
 
 [heard_fixes]
 # Words the ear often writes wrong -> what you meant. Add your own.

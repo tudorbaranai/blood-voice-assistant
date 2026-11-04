@@ -41,6 +41,10 @@ mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speaker
 I say **"Hey Blood"**, it answers **"Yes, Tudor?"**, and I talk. A small
 program on the laptop listens all the time, starts by itself at login, and
 needs no browser ([chapter 09](docs/tutorial/09-wake-word-and-voice-program.md)).
+After an answer it keeps listening for 5 seconds, so I can go on without
+saying "Hey Blood" again. A full-screen window, the Eclipse, comes up with it:
+my words, its answer, a black sun that moves with both voices, and a hand that
+grips the sun when a light goes off ([chapter 10](docs/tutorial/10-screen.md)).
 I can also type to it in Home Assistant's Assist. It switches the bulb and the
 plug, dims the light, changes its colour, and answers general questions. It
 knows the date and the weekday, and it says so when it can't check something
@@ -118,6 +122,9 @@ happy one.
   turn on the lights" without doing it.
 - **The wake word is weak at a distance** (3/12 from the bed). It works best
   said clearly, with a strong "H".
+- **Short memory.** The brain holds about 4,000 tokens, instructions
+  included, so Blood starts a fresh conversation after 6 questions in a row.
+  Past that, it forgot my devices and took ~29 s per answer.
 - **Two actions in one sentence can be half done.** "Make it brighter and
   blue" changed only the brightness, but Blood said both were done. One action
   per sentence works.
@@ -207,6 +214,8 @@ questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
 | 13 Oct | First light switched by Home Assistant. Surprise: the bulb I thought was a Philips Hue was a WiZ, so the Bluetooth setup I'd just done wasn't needed. |
 | 24 Oct | Smart plug working locally (installed by hand, because the community store's GitHub login was broken). Built the bench with the lie detector, prompts v8 → v12, all layers on the GPU. |
 | 2 Nov | "Hey Blood": trained my own wake word on Google Colab (after eight notebook fixes), recorded 200 clips of my voice, and found out the hard way how training cuts them. Wrote the voice program, took it from 12–18 s to ~2 s per answer, prompt v13, and set it to start by itself at login. |
+| 3 Nov | Chose the screen design, the Eclipse, and had Claude render its God Hand in Blender. |
+| 4 Nov | Wired the screen into the voice program (Edge kiosk, a hand that reacts to the real light), follow-up questions without "Hey Blood", and found the brain's memory limit the hard way. |
 
 I built this with Claude Code as a pair programmer; the decisions, testing and
 hardware are mine.
@@ -241,7 +250,7 @@ shape: *Goal → Why → Steps → Check it worked → What went wrong for me.*
 7. [Bluetooth into the VM](docs/tutorial/07-bluetooth-passthrough.md) *(optional)*
 8. [Lights and plugs](docs/tutorial/08-lights-and-plugs.md)
 9. [Wake word and my own voice program](docs/tutorial/09-wake-word-and-voice-program.md): training on Colab with every fix, your own voice, the program, auto-start
-10. [The screen](docs/tutorial/10-screen.md): the Eclipse design, and how its God Hand was made in Blender *(wiring next)*
+10. [The screen](docs/tutorial/10-screen.md): the Eclipse design, how its God Hand was made in Blender, and the wiring
 11. [Maintenance and troubleshooting](docs/tutorial/11-maintenance-and-troubleshooting.md)
 
 To run the brain bench against your own Ollama (Python 3.9+, no extra
@@ -269,7 +278,9 @@ blood/                   the voice program
   wake_test.py           live mic test: the score of every attempt
   wake_eval.py           score a model on your recordings (--holdout: only the held-back ones)
   colab_train_v3.sh      train "Hey Blood" on Colab with your clips (v2: the version that went wrong)
-  screen*.py/.html       the pop-up screen, and five early design candidates
+  screen.py              the full-screen window: Edge in kiosk mode, fed live over a websocket
+  screen_live.js         plugs a design page into it (screen.html: the plain fallback orb)
+  screen_designs.html    five early design candidates
 docs/design/manga-v3/    the chosen screen: the Eclipse page, its storyboard, the Blender scripts for the hand
 prompts/                 every version of Blood's instructions, v2 → v13
 tests/
@@ -306,10 +317,8 @@ The core works and Blood now listens on its own. Next on the list:
 
 - **wake word v3**, trained with my own clips cut the right way, to hear me from
   the bed and across the room
-- **the screen**: the design is chosen and built as a page, the Eclipse, with
-  a God Hand rendered in Blender that grips the sun when a light goes off
-  ([chapter 10](docs/tutorial/10-screen.md)); next is wiring it into the
-  voice program
+- **the screen**: more moments, like its own animation for a light turning
+  on (now only "off" has the hand)
 - **automations**, the thing I wanted in the first place
 
 ## License

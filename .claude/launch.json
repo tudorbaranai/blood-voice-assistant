@@ -6,6 +6,12 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "47290", "--bind", "127.0.0.1", "--directory", "docs/design"],
       "port": 47290
+    },
+    {
+      "name": "blood-screen-preview",
+      "runtimeExecutable": ".venv/Scripts/python.exe",
+      "runtimeArgs": ["blood/screen.py"],
+      "port": 47203
     }
   ]
 }
