@@ -23,7 +23,7 @@ Like Alexa or Google Home, but built from free, open-source parts on one Windows
 laptop. Speech recognition, the AI model and the voice all run on the laptop, so
 it keeps working with the internet unplugged.
 
-```
+```text
 mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speakers
                            │
                            ▼
@@ -31,7 +31,7 @@ mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speaker
 ```
 
 | Piece | Built with |
-|---|---|
+| --- | --- |
 | Glue + device control | [Home Assistant OS](https://www.home-assistant.io/) in a VirtualBox VM |
 | Brain | [Ollama](https://ollama.com/) running `qwen3:4b-instruct` on the GPU, tuned as [`blood-brain`](tools/blood-brain.Modelfile) |
 | Speech → text | Parakeet, through Home Assistant's Whisper add-on |
@@ -73,7 +73,7 @@ Latest run ([full results](tests/results/bench-v12-blood-brain-2026-10-24_22-47.
 **52 of 56 passed, 1.4 s average answer, 3.2 s worst.**
 
 | Category | Passed |
-|---|---|
+| --- | --- |
 | Switching devices on/off | 11/11 |
 | Other names for a device ("the ceiling light") | 2/2 |
 | Unclear target ("turn on the light") | 1/1 |
@@ -94,7 +94,7 @@ catches. In November I added 14 harder cases and prompt v13; those runs are in
 on recordings of me it never trained on:
 
 | Where I said it | Heard |
-|---|---|
+| --- | --- |
 | At the desk | 10/12 |
 | From the bed | 3/12 |
 | Across the room | 3/12 |
@@ -186,6 +186,7 @@ hardware are mine.
 ## Build your own
 
 > **Before you start**
+>
 > - **A Windows 10/11 laptop that can stay on**, ideally with an NVIDIA card
 >   (4 GB or more). The steps use PowerShell and VirtualBox, so they're
 >   Windows-only as written.
@@ -230,7 +231,7 @@ The prompts use my name (Tudor). Replace it with yours: Blood addresses you by n
 
 ## What's in this repo
 
-```
+```text
 docs/tutorial/           the step-by-step guide
 blood/                   the voice program
   blood.py               wake word → "Yes, Tudor?" → record → Home Assistant → speak
