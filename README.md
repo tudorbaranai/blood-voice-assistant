@@ -2,6 +2,8 @@
 
 An offline voice assistant that runs on my old laptop and controls my lights.
 
+Want to build your own? Jump to [Build your own](#build-your-own).
+
 <!-- DEMO: a 20–30 s clip goes here (ask a question, then "I can't really read
      with this light" and the bulb gets brighter). Upload it by dragging the .mp4
      into README.md in GitHub's web editor. -->
@@ -21,7 +23,7 @@ Like Alexa or Google Home, but built from free, open-source parts on one Windows
 laptop. Speech recognition, the AI model and the voice all run on the laptop, so
 it keeps working with the internet unplugged.
 
-```
+```text
 mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speakers
                            │
                            ▼
@@ -29,7 +31,7 @@ mic ─▶ speech → text ─▶ local AI ─▶ text → speech ─▶ speaker
 ```
 
 | Piece | Built with |
-|---|---|
+| --- | --- |
 | Glue + device control | [Home Assistant OS](https://www.home-assistant.io/) in a VirtualBox VM |
 | Brain | [Ollama](https://ollama.com/) running `qwen3:4b-instruct` on the GPU, tuned as [`blood-brain`](tools/blood-brain.Modelfile) |
 | Speech → text | Parakeet, through Home Assistant's Whisper add-on |
@@ -71,7 +73,7 @@ Latest run ([full results](tests/results/bench-v12-blood-brain-2026-10-24_22-47.
 **52 of 56 passed, 1.4 s average answer, 3.2 s worst.**
 
 | Category | Passed |
-|---|---|
+| --- | --- |
 | Switching devices on/off | 11/11 |
 | Other names for a device ("the ceiling light") | 2/2 |
 | Unclear target ("turn on the light") | 1/1 |
@@ -92,7 +94,7 @@ catches. In November I added 14 harder cases and prompt v13; those runs are in
 on recordings of me it never trained on:
 
 | Where I said it | Heard |
-|---|---|
+| --- | --- |
 | At the desk | 10/12 |
 | From the bed | 3/12 |
 | Across the room | 3/12 |
@@ -172,50 +174,11 @@ questions from about 4/10 to 7.5/10, same model, same laptop. What I learned:
   Blodescu, who invented the toaster". The prompt never mentions any of them;
   Blood has to work out on its own that it can't, or doesn't know.
 
-## Other things I learned
-
-- **Anything that changes goes at the end of the prompt.** Ollama reuses the
-  start of a prompt between questions, up to the first character that differs.
-  With the clock (to the minute) at the top, the whole prompt was re-read on
-  every question: 4–7 s per answer. Moving it to the bottom fixed it.
-  ([chapter 04](docs/tutorial/04-connect-brain-and-prompt.md))
-- **...and then the clock had to go completely.** The conversation comes *after*
-  the prompt, so once the voice program kept a long conversation, every new
-  minute made the brain re-read all of it: 12–18 s per answer. Now there's no
-  clock (Home Assistant answers the time itself), and a fresh conversation
-  starts after 2 minutes of silence.
-- **Check how a training tool cuts your clips.** openWakeWord treats the *end*
-  of each clip as the wake word. My recordings had 1.4 s of silence after the
-  phrase, so the model learned the silence, and got worse. Also: keep some
-  recordings out of training, and test on those.
-  ([chapter 09](docs/tutorial/09-wake-word-and-voice-program.md))
-- **Home Assistant quietly overrides the context size.** It asks Ollama for
-  8192 tokens, which pushed 36% of the model onto the slow CPU. Setting 4096
-  brought that to 27%, and forcing every layer onto the 4 GB GPU took the
-  average answer from 3.4 s to 1.4 s with the same prompt.
-- **Small and fast isn't enough.** `qwen3:1.7b` answered in under a second but
-  happily described the made-up toaster scientist. The "thinking" models were
-  smarter but took 11–235 s. `llama3.2:3b` just wasn't my style.
-  `qwen3:4b-instruct` was the middle: not brilliant, honest, under 2 s.
-  ([chapter 02](docs/tutorial/02-brain-ollama.md))
-- **Tuning the mic beat switching engines.** Mic volume to 100 and the Realtek
-  "effects" off took word errors on five test sentences from 14% to 3%, a bigger
-  gain than any engine change. With the boost lowered to 0 dB, a short re-test
-  got every word right.
-  ([chapter 05](docs/tutorial/05-ear-speech-to-text.md))
-
 ## How it came together
 
-| When (2026) | What happened |
-|---|---|
-| 5 Oct | Tried local models on my everyday laptop. Qwen felt better than Llama. |
-| 6–8 Oct | Set up the Asus to run 24/7 and installed Home Assistant OS in a VM on it. The first install hung at 5% for half an hour; switching the VM's network from bridged to NAT fixed it. |
-| 9–12 Oct | Benchmarked models and moved from `qwen3:1.7b` to `qwen3:4b-instruct`. Chose the ear and the voice, tuned the mic. |
-| 13 Oct | First light switched by Home Assistant. Surprise: the bulb I thought was a Philips Hue was a WiZ, so the Bluetooth setup I'd just done wasn't needed. |
-| 24 Oct | Smart plug working locally (installed by hand, because the community store's GitHub login was broken). Built the bench with the lie detector, prompts v8 → v12, all layers on the GPU. |
-| 2 Nov | "Hey Blood": trained my own wake word on Google Colab (after eight notebook fixes), recorded 200 clips of my voice, and found out the hard way how training cuts them. Wrote the voice program, took it from 12–18 s to ~2 s per answer, prompt v13, and set it to start by itself at login. |
-| 3 Nov | Chose the screen design, the Eclipse, and had Claude render its God Hand in Blender. |
-| 4 Nov | Wired the screen into the voice program (Edge kiosk, a hand that reacts to the real light), follow-up questions without "Hey Blood", and found the brain's memory limit the hard way. |
+From the first model test on 5 October to "Hey Blood" in November, with the lessons about
+prompt caching, wake-word training, context size and the mic along the way:
+[the timeline and what I learned](docs/how-it-came-together.md).
 
 I built this with Claude Code as a pair programmer; the decisions, testing and
 hardware are mine.
@@ -223,6 +186,7 @@ hardware are mine.
 ## Build your own
 
 > **Before you start**
+>
 > - **A Windows 10/11 laptop that can stay on**, ideally with an NVIDIA card
 >   (4 GB or more). The steps use PowerShell and VirtualBox, so they're
 >   Windows-only as written.
@@ -267,7 +231,7 @@ The prompts use my name (Tudor). Replace it with yours: Blood addresses you by n
 
 ## What's in this repo
 
-```
+```text
 docs/tutorial/           the step-by-step guide
 blood/                   the voice program
   blood.py               wake word → "Yes, Tudor?" → record → Home Assistant → speak
