@@ -2,6 +2,8 @@
 
 An offline voice assistant that runs on my old laptop and controls my lights.
 
+Want to build your own? Jump to [Build your own](#build-your-own).
+
 <!-- DEMO: a 20–30 s clip goes here (ask a question, then "I can't really read
      with this light" and the bulb gets brighter). Upload it by dragging the .mp4
      into README.md in GitHub's web editor. -->
